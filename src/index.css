@@ -4,11 +4,11 @@
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Karla', sans-serif;
+    font-family: 'Geist', sans-serif;
   }
 }
 
@@ -43,11 +43,12 @@
   }
 
   .cool-text {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Geist', sans-serif;
     letter-spacing: 2px;
     text-transform: uppercase;
     background: linear-gradient(to right, #FF7F50, #00CED1);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     position: relative;
     text-shadow: 
@@ -64,6 +65,7 @@
     height: 100%;
     background: linear-gradient(to right, #FF7F50, #00CED1);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     opacity: 0.5;
     filter: blur(8px);

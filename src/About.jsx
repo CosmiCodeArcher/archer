@@ -20,9 +20,11 @@ function About() {
             <p className="mb-4 text-sm md:text-base">
                 My technical toolkit includes:
                 <ul className="list-disc list-inside ml-4">
-                    <li>JavaScript (ES6+)</li>
                     <li>React</li>
-                    <li>HTML5 & CSS3</li>
+                    <li>Vite</li>
+                    <li>Tailwind</li>
+                    <li>Python</li>
+                    <li>Web Sockets</li>
                 </ul>
             </p>
             <p className="mb-4">

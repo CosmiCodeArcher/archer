@@ -2,6 +2,14 @@
 function Portfolio() {
     const projects = [
         {
+            title: "TeeDo",
+            description: "Full-Stack Todo App, built solo with AI assist, March 2025",
+            technologies: ["React", "Vite", "Tailwind", "Python", "Web Sockets"],
+            image: "/TeeDo.png",
+            // github: "It's a private repo",
+            live: "https://teedo-frontend.vercel.app"
+        },
+        {
             title: "Awodi Quizzical",
             description: "An interactive quiz app built with React, offering users a fun way to test their knowledge on various topics.",
             technologies: ["React", "CSS"],
@@ -25,16 +33,6 @@ function Portfolio() {
             github: "https://github.com/Ochiponu-Awodi/Meme-Generator",
             live: "https://scrimba-meme-generator-awodi.netlify.app/"
         },
-        {
-            title: "Scrimba Vanlife",
-            description: "A mock van rental platform showcasing dynamic routing and nested routes using React Router, providing users with an intuitive browsing experience for van rentals.",
-            technologies: ["React",  "React Router", "CSS"],
-
-            image: "/Scrimba-Vanlife.png",
-            github: "https://github.com/Ochiponu-Awodi/-Scrimba-Vanlife",
-            live: "https://scrimba-vanlife-awodi.netlify.app/"
-        },
-        // Add more projects...
     ];
 
     return (
@@ -56,14 +54,14 @@ function Portfolio() {
                             <span className="font-semibold">Technologies:</span> {project.technologies.join(", ")}
                         </p>
                         <div className="flex space-x-4">
-                            <a 
+                            {/* <a 
                                 href={project.github} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="text-modern-coral hover:text-modern-teal transition-colors duration-300 text-sm md:text-base"
                             >
                                 GitHub
-                            </a>
+                            </a> */}
                             {project.live && (
                                 <a 
                                     href={project.live} 

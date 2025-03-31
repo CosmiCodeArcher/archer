@@ -6,6 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundClip: {
+        'text': 'text',
+        'padding': 'padding-box',
+        'border': 'border-box',
+      },
       fontFamily: {
         'orbitron': ['Orbitron', 'sans-serif'],
         'inter': ['Inter', 'sans-serif'],
