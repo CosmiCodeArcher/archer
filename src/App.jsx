@@ -4,14 +4,14 @@ import Success from "./success";
 
 const router = createBrowserRouter ( createRoutesFromElements (
   <>
-      <Route path="/" element={<Layout />} />
-      <Route path="/success" element={<Success />} />
+    <Route path="/" element={<Layout />} />
+    <Route path="/success" element={<Success />} />
   </>
 ) )
 
 function App () {
   return (
-        <RouterProvider router={router}/>
+    <RouterProvider router={router}/>
   )
 }
 

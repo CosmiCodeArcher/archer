@@ -1,44 +1,41 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      backgroundClip: {
-        'text': 'text',
-        'padding': 'padding-box',
-        'border': 'border-box',
+      colors: {
+        "vintage-beige": "#F5E8C7",
+        "vintage-sage": "#C2D8B9",
+        "modern-teal": "#00CED1",
+        "modern-coral": "#FF7F50",
       },
       fontFamily: {
-        'orbitron': ['Orbitron', 'sans-serif'],
-        'inter': ['Inter', 'sans-serif'],
-        'karla': ['Karla', 'sans-serif'],
-      },
-      colors: {
-        vintage: {
-          beige: '#F5E6D3',
-          sage: '#C7D3C5',
-        },
-        modern: {
-          teal: '#00CED1',
-          coral: '#FF7F50',
-          purrple: '#9370DB',
-          gold: '#FFD700',
-          pink: '#ff80b5',
-          purple: '#9089fc',
-        },
+        karla: ["Karla", "sans-serif"],
+        geist: ["Geist", "sans-serif"],
       },
       animation: {
-        'bounce-left': 'bounce-left 1s infinite',
-        'gradient-shift': 'gradient-shift 5s ease infinite',
+        "gradient-shift": "gradientShift 15s ease infinite",
+        "mini-pop": "mini-pop 0.6s ease-out",
+        "tooltip-pop": "tooltip-pop 0.3s ease-out",
+      },
+      keyframes: {
+        gradientShift: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        "mini-pop": {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "100%": { transform: "scale(0.5)", opacity: "0" },
+        },
+        "tooltip-pop": {
+          "0%": { transform: "scale(0.9)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
       },
       boxShadow: {
-        'glow': '0 0 15px rgba(255, 127, 80, 0.8)',
+        glow: "0 0 15px rgba(255, 127, 80, 0.8)",
       },
     },
   },
   plugins: [],
-}
-
+};
