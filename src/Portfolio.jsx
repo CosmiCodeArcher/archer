@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGesture } from "@use-gesture/react";
 import CountUp from "react-countup";
@@ -8,20 +8,20 @@ import PropTypes from "prop-types";
 function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [filter, setFilter] = useState("All");
-  const [isMuted, setIsMuted] = useState(false);
   const [carouselX, setCarouselX] = useState(0);
   const [hoveredProject, setHoveredProject] = useState(null);
   const [hoveredFilter, setHoveredFilter] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [viewMode, setViewMode] = useState("carousel"); // carousel or grid
+  const [viewMode, setViewMode] = useState("carousel");
   const carouselRef = useRef(null);
 
-  // Detect mobile
+  // Detect mobile - memoized to prevent unnecessary re-renders
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      // Auto switch to grid on mobile
-      if (window.innerWidth < 768) {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      // Auto switch to grid on mobile, but allow both views
+      if (mobile && viewMode === "carousel") {
         setViewMode("grid");
       }
     };
@@ -29,9 +29,10 @@ function Portfolio() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  }, [viewMode]);
 
-  const projects = [
+  // Memoize projects to prevent re-creation on every render
+  const projects = useMemo(() => [
     {
       title: "TeeDo",
       description: "Full-Stack Todo App, built solo with AI assist, March 2025",
@@ -76,20 +77,24 @@ function Portfolio() {
       qr: "/meme-qr.png",
       highlight: "Creative",
     },
-  ];
+  ], []);
 
-  const filters = [
+  // Memoize filters
+  const filters = useMemo(() => [
     { name: "All", icon: "🌐", color: "from-purple-400 to-pink-400", description: "View everything" },
     { name: "Web2", icon: "💻", color: "from-blue-400 to-cyan-400", description: "Traditional web apps" },
     { name: "Web3", icon: "⛓️", color: "from-orange-400 to-red-400", description: "Blockchain & DeFi" },
-  ];
+  ], []);
 
-  const filteredProjects = filter === "All" 
-    ? projects 
-    : projects.filter((p) => p.category === filter);
+  // Memoize filtered projects to prevent recalculation
+  const filteredProjects = useMemo(() => 
+    filter === "All" ? projects : projects.filter((p) => p.category === filter),
+    [filter, projects]
+  );
 
   const cardWidth = isMobile ? 280 : 320;
 
+  // Memoize gesture binding
   useGesture(
     {
       onDrag: ({ movement: [mx], event }) => {
@@ -106,51 +111,51 @@ function Portfolio() {
     { target: carouselRef, drag: { axis: "x", filterTaps: true } }
   );
 
-  const playSound = (type) => {
-    if (!isMuted) {
-      const audio = new Audio(type === "hover" ? "/hover-whoosh.mp3" : "/click-pop.mp3");
-      audio.play().catch(() => {});
-    }
-  };
+  // Memoize BubbleBurst component
+  const BubbleBurst = useMemo(() => {
+    const Component = ({ trigger }) => (
+      <AnimatePresence>
+        {trigger && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none overflow-hidden rounded-[20px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {[...Array(isMobile ? 4 : 8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-modern-coral to-modern-teal rounded-full"
+                style={{
+                  left: "50%",
+                  top: "50%"
+                }}
+                initial={{ scale: 0, x: 0, y: 0 }}
+                animate={{
+                  scale: [0, 1, 0],
+                  x: (Math.cos((i / (isMobile ? 4 : 8)) * Math.PI * 2) * (isMobile ? 60 : 100)),
+                  y: (Math.sin((i / (isMobile ? 4 : 8)) * Math.PI * 2) * (isMobile ? 60 : 100)),
+                  opacity: [1, 1, 0]
+                }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+    
+    Component.propTypes = {
+      trigger: PropTypes.bool.isRequired,
+    };
+    
+    return Component;
+  }, [isMobile]);
 
-  const BubbleBurst = ({ trigger }) => (
-    <AnimatePresence>
-      {trigger && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden rounded-[20px]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {[...Array(isMobile ? 4 : 8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-modern-coral to-modern-teal rounded-full"
-              style={{
-                left: "50%",
-                top: "50%"
-              }}
-              initial={{ scale: 0, x: 0, y: 0 }}
-              animate={{
-                scale: [0, 1, 0],
-                x: (Math.cos((i / (isMobile ? 4 : 8)) * Math.PI * 2) * (isMobile ? 60 : 100)),
-                y: (Math.sin((i / (isMobile ? 4 : 8)) * Math.PI * 2) * (isMobile ? 60 : 100)),
-                opacity: [1, 1, 0]
-              }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            />
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-
-  BubbleBurst.propTypes = {
-    trigger: PropTypes.bool.isRequired,
-  };
-
-  const ProjectCard = ({ project, index }) => (
+  // Memoize ProjectCard component
+  const ProjectCard = useCallback(({ project, index }) => (
     <motion.div
+      key={project.title}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
@@ -161,14 +166,10 @@ function Portfolio() {
         <motion.div
           className="portfolio-card bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-md rounded-[20px] p-4 md:p-5 shadow-lg hover:shadow-glow transition-all duration-300 cursor-pointer relative overflow-hidden h-full border border-white/30"
           whileHover={{ y: -5 }}
-          onClick={() => {
-            setSelectedProject(project);
-            playSound("click");
-          }}
+          onClick={() => setSelectedProject(project)}
           onHoverStart={() => {
             if (!isMobile) {
               setHoveredProject(project.title);
-              playSound("hover");
             }
           }}
           onHoverEnd={() => !isMobile && setHoveredProject(null)}
@@ -227,7 +228,7 @@ function Portfolio() {
         </motion.div>
       </Tilt>
     </motion.div>
-  );
+  ), [viewMode, cardWidth, isMobile, hoveredProject, BubbleBurst]);
 
   ProjectCard.propTypes = {
     project: PropTypes.object.isRequired,
@@ -246,41 +247,29 @@ function Portfolio() {
           My Projects
         </h2>
         <div className="flex gap-2">
-          {!isMobile && (
-            <>
-              <motion.button
-                onClick={() => setViewMode("carousel")}
-                className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
-                  viewMode === "carousel"
-                    ? "bg-modern-coral text-white"
-                    : "bg-white/50 text-gray-700 hover:bg-white/80"
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                🎠 Carousel
-              </motion.button>
-              <motion.button
-                onClick={() => setViewMode("grid")}
-                className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
-                  viewMode === "grid"
-                    ? "bg-modern-coral text-white"
-                    : "bg-white/50 text-gray-700 hover:bg-white/80"
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                📱 Grid
-              </motion.button>
-            </>
-          )}
           <motion.button
-            onClick={() => setIsMuted((m) => !m)}
-            className="px-3 py-1.5 rounded-lg bg-white/50 backdrop-blur-sm hover:bg-white/80 transition-all duration-300 text-xs md:text-sm font-medium"
+            onClick={() => setViewMode("carousel")}
+            className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
+              viewMode === "carousel"
+                ? "bg-modern-coral text-white"
+                : "bg-white/50 text-gray-700 hover:bg-white/80"
+            }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isMuted ? "🔇" : "🔊"}
+            🎠 Carousel
+          </motion.button>
+          <motion.button
+            onClick={() => setViewMode("grid")}
+            className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
+              viewMode === "grid"
+                ? "bg-modern-coral text-white"
+                : "bg-white/50 text-gray-700 hover:bg-white/80"
+            }`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            📱 Grid
           </motion.button>
         </div>
       </motion.div>
@@ -301,7 +290,6 @@ function Portfolio() {
               <motion.button
                 onClick={() => {
                   setFilter(filterItem.name);
-                  playSound("click");
                   setCarouselX(0);
                 }}
                 className="relative overflow-hidden group"
