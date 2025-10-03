@@ -1,9 +1,93 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGesture } from "@use-gesture/react";
 import CountUp from "react-countup";
 import { Tilt } from "react-tilt";
 import PropTypes from "prop-types";
+
+// Memoized ProjectCard to prevent re-renders
+const ProjectCard = memo(({ project, index, viewMode, cardWidth, isMobile, onSelect, onHover }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className={viewMode === "grid" ? "w-full" : "flex-shrink-0"}
+      style={viewMode === "carousel" ? { width: cardWidth } : {}}
+    >
+      <Tilt options={{ max: isMobile ? 10 : 15, scale: isMobile ? 1.02 : 1.03 }}>
+        <motion.div
+          className="portfolio-card bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-md rounded-[20px] p-4 md:p-5 shadow-lg hover:shadow-glow transition-all duration-300 cursor-pointer relative overflow-hidden h-full border border-white/30"
+          whileHover={{ y: -5 }}
+          onClick={() => onSelect(project)}
+          onMouseEnter={() => !isMobile && onHover(project.title)}
+          onMouseLeave={() => !isMobile && onHover(null)}
+          onTouchStart={() => onHover(project.title)}
+          onTouchEnd={() => setTimeout(() => onHover(null), 300)}
+        >
+          {/* Highlight Badge */}
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 z-10">
+            <span className="px-2 py-1 md:px-3 md:py-1 bg-gradient-to-r from-modern-coral to-modern-teal text-white text-[10px] md:text-xs font-bold rounded-full shadow-lg">
+              {project.highlight}
+            </span>
+          </div>
+
+          {/* Image */}
+          <div className="relative overflow-hidden rounded-xl mb-3 md:mb-4 group">
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-40 md:h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+
+          {/* Content */}
+          <h3 className="text-base md:text-xl font-bold text-modern-coral mb-2">
+            {project.title}
+          </h3>
+          <p className="text-xs md:text-sm text-gray-700 dark:text-gray-200 mb-3 line-clamp-2">
+            {project.description}
+          </p>
+
+          {/* Tech Tags */}
+          <div className="tech-tags flex flex-wrap gap-1.5 md:gap-2 mb-3">
+            {project.technologies.map((tag) => (
+              <span
+                key={tag}
+                className="text-[9px] md:text-xs bg-modern-teal/20 dark:bg-modern-teal/30 text-modern-teal dark:text-modern-teal px-2 py-0.5 md:py-1 rounded-full font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Stats */}
+          <div className="stats flex justify-between text-[10px] md:text-sm text-gray-600 dark:text-gray-300 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <span className="flex items-center gap-1">
+              📝 <CountUp end={project.stats.commits} duration={2} />+ commits
+            </span>
+            <span className="flex items-center gap-1">
+              ⏱️ <CountUp end={project.stats.hours} duration={2} />+ hrs
+            </span>
+          </div>
+        </motion.div>
+      </Tilt>
+    </motion.div>
+  );
+});
+
+ProjectCard.displayName = "ProjectCard";
+
+ProjectCard.propTypes = {
+  project: PropTypes.object.isRequired,
+  index: PropTypes.number.isRequired,
+  viewMode: PropTypes.string.isRequired,
+  cardWidth: PropTypes.number.isRequired,
+  isMobile: PropTypes.bool.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  onHover: PropTypes.func.isRequired,
+};
 
 function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -15,24 +99,7 @@ function Portfolio() {
   const [viewMode, setViewMode] = useState("carousel");
   const carouselRef = useRef(null);
 
-  // Detect mobile - memoized to prevent unnecessary re-renders
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      // Auto switch to grid on mobile, but allow both views
-      if (mobile && viewMode === "carousel") {
-        setViewMode("grid");
-      }
-    };
-    
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, [viewMode]);
-
-  // Memoize projects to prevent re-creation on every render
-  const projects = useMemo(() => [
+  const projects = [
     {
       title: "TeeDo",
       description: "Full-Stack Todo App, built solo with AI assist, March 2025",
@@ -77,24 +144,34 @@ function Portfolio() {
       qr: "/meme-qr.png",
       highlight: "Creative",
     },
-  ], []);
+  ];
 
-  // Memoize filters
-  const filters = useMemo(() => [
+  const filters = [
     { name: "All", icon: "🌐", color: "from-purple-400 to-pink-400", description: "View everything" },
     { name: "Web2", icon: "💻", color: "from-blue-400 to-cyan-400", description: "Traditional web apps" },
     { name: "Web3", icon: "⛓️", color: "from-orange-400 to-red-400", description: "Blockchain & DeFi" },
-  ], []);
+  ];
 
-  // Memoize filtered projects to prevent recalculation
-  const filteredProjects = useMemo(() => 
-    filter === "All" ? projects : projects.filter((p) => p.category === filter),
-    [filter, projects]
-  );
+  const filteredProjects = filter === "All" 
+    ? projects 
+    : projects.filter((p) => p.category === filter);
 
   const cardWidth = isMobile ? 280 : 320;
 
-  // Memoize gesture binding
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setViewMode("grid");
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   useGesture(
     {
       onDrag: ({ movement: [mx], event }) => {
@@ -111,130 +188,6 @@ function Portfolio() {
     { target: carouselRef, drag: { axis: "x", filterTaps: true } }
   );
 
-  // Memoize BubbleBurst component
-  const BubbleBurst = useMemo(() => {
-    const Component = ({ trigger }) => (
-      <AnimatePresence>
-        {trigger && (
-          <motion.div
-            className="absolute inset-0 pointer-events-none overflow-hidden rounded-[20px]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {[...Array(isMobile ? 4 : 8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-modern-coral to-modern-teal rounded-full"
-                style={{
-                  left: "50%",
-                  top: "50%"
-                }}
-                initial={{ scale: 0, x: 0, y: 0 }}
-                animate={{
-                  scale: [0, 1, 0],
-                  x: (Math.cos((i / (isMobile ? 4 : 8)) * Math.PI * 2) * (isMobile ? 60 : 100)),
-                  y: (Math.sin((i / (isMobile ? 4 : 8)) * Math.PI * 2) * (isMobile ? 60 : 100)),
-                  opacity: [1, 1, 0]
-                }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    );
-    
-    Component.propTypes = {
-      trigger: PropTypes.bool.isRequired,
-    };
-    
-    return Component;
-  }, [isMobile]);
-
-  // Memoize ProjectCard component
-  const ProjectCard = useCallback(({ project, index }) => (
-    <motion.div
-      key={project.title}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className={viewMode === "grid" ? "w-full" : "flex-shrink-0"}
-      style={viewMode === "carousel" ? { width: cardWidth } : {}}
-    >
-      <Tilt options={{ max: isMobile ? 10 : 15, scale: isMobile ? 1.02 : 1.03 }}>
-        <motion.div
-          className="portfolio-card bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-md rounded-[20px] p-4 md:p-5 shadow-lg hover:shadow-glow transition-all duration-300 cursor-pointer relative overflow-hidden h-full border border-white/30"
-          whileHover={{ y: -5 }}
-          onClick={() => setSelectedProject(project)}
-          onHoverStart={() => {
-            if (!isMobile) {
-              setHoveredProject(project.title);
-            }
-          }}
-          onHoverEnd={() => !isMobile && setHoveredProject(null)}
-          onTouchStart={() => setHoveredProject(project.title)}
-          onTouchEnd={() => setHoveredProject(null)}
-        >
-          {/* Highlight Badge */}
-          <div className="absolute top-2 right-2 md:top-3 md:right-3 z-10">
-            <span className="px-2 py-1 md:px-3 md:py-1 bg-gradient-to-r from-modern-coral to-modern-teal text-white text-[10px] md:text-xs font-bold rounded-full shadow-lg">
-              {project.highlight}
-            </span>
-          </div>
-
-          {/* Image */}
-          <div className="relative overflow-hidden rounded-xl mb-3 md:mb-4 group">
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-40 md:h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </div>
-
-          {/* Content */}
-          <h3 className="text-base md:text-xl font-bold text-modern-coral mb-2">
-            {project.title}
-          </h3>
-          <p className="text-xs md:text-sm text-gray-700 mb-3 line-clamp-2">
-            {project.description}
-          </p>
-
-          {/* Tech Tags */}
-          <div className="tech-tags flex flex-wrap gap-1.5 md:gap-2 mb-3">
-            {project.technologies.map((tag) => (
-              <span
-                key={tag}
-                className="text-[9px] md:text-xs bg-modern-teal/20 text-modern-teal px-2 py-0.5 md:py-1 rounded-full font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Stats */}
-          <div className="stats flex justify-between text-[10px] md:text-sm text-gray-600 pt-3 border-t border-gray-200">
-            <span className="flex items-center gap-1">
-              📝 <CountUp end={project.stats.commits} duration={2} />+ commits
-            </span>
-            <span className="flex items-center gap-1">
-              ⏱️ <CountUp end={project.stats.hours} duration={2} />+ hrs
-            </span>
-          </div>
-
-          {/* Bubble Burst Effect */}
-          <BubbleBurst trigger={hoveredProject === project.title} />
-        </motion.div>
-      </Tilt>
-    </motion.div>
-  ), [viewMode, cardWidth, isMobile, hoveredProject, BubbleBurst]);
-
-  ProjectCard.propTypes = {
-    project: PropTypes.object.isRequired,
-    index: PropTypes.number.isRequired,
-  };
-
   return (
     <div className="portfolio-container p-4 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -246,32 +199,35 @@ function Portfolio() {
         <h2 className="cool-text text-2xl md:text-5xl font-bold text-center md:text-left" data-text="My Projects">
           My Projects
         </h2>
-        <div className="flex gap-2">
-          <motion.button
-            onClick={() => setViewMode("carousel")}
-            className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
-              viewMode === "carousel"
-                ? "bg-modern-coral text-white"
-                : "bg-white/50 text-gray-700 hover:bg-white/80"
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            🎠 Carousel
-          </motion.button>
-          <motion.button
-            onClick={() => setViewMode("grid")}
-            className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
-              viewMode === "grid"
-                ? "bg-modern-coral text-white"
-                : "bg-white/50 text-gray-700 hover:bg-white/80"
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            📱 Grid
-          </motion.button>
-        </div>
+        {/* View Toggle - Desktop Only */}
+        {!isMobile && (
+          <div className="flex gap-2">
+            <motion.button
+              onClick={() => setViewMode("carousel")}
+              className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
+                viewMode === "carousel"
+                  ? "bg-modern-coral text-white"
+                  : "bg-white/50 text-gray-700 hover:bg-white/80"
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🎠 Carousel
+            </motion.button>
+            <motion.button
+              onClick={() => setViewMode("grid")}
+              className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
+                viewMode === "grid"
+                  ? "bg-modern-coral text-white"
+                  : "bg-white/50 text-gray-700 hover:bg-white/80"
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              📱 Grid
+            </motion.button>
+          </div>
+        )}
       </motion.div>
 
       {/* Enhanced Filters */}
@@ -369,7 +325,16 @@ function Portfolio() {
                 transition={{ type: "spring", stiffness: 150, damping: 20 }}
               >
                 {filteredProjects.map((project, index) => (
-                  <ProjectCard key={project.title} project={project} index={index} />
+                  <ProjectCard
+                    key={project.title}
+                    project={project}
+                    index={index}
+                    viewMode={viewMode}
+                    cardWidth={cardWidth}
+                    isMobile={isMobile}
+                    onSelect={setSelectedProject}
+                    onHover={setHoveredProject}
+                  />
                 ))}
               </motion.div>
 
@@ -403,28 +368,23 @@ function Portfolio() {
             // Grid View
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
               {filteredProjects.map((project, index) => (
-                <ProjectCard key={project.title} project={project} index={index} />
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  index={index}
+                  viewMode={viewMode}
+                  cardWidth={cardWidth}
+                  isMobile={isMobile}
+                  onSelect={setSelectedProject}
+                  onHover={setHoveredProject}
+                />
               ))}
             </div>
-          )}
-
-          {/* Swipe Indicator for Mobile Carousel */}
-          {isMobile && viewMode === "carousel" && (
-            <motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-center text-xs text-gray-500 mb-4 flex items-center justify-center gap-2"
-            >
-              <span>👆</span>
-              <span>Swipe to explore</span>
-              <span>👆</span>
-            </motion.div>
           )}
         </>
       )}
 
-      {/* Project Modal - Mobile Optimized */}
+      {/* Project Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -434,7 +394,6 @@ function Portfolio() {
             exit={{ opacity: 0 }}
             onClick={() => setSelectedProject(null)}
           >
-            {/* Backdrop */}
             <motion.div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               initial={{ opacity: 0 }}
@@ -442,7 +401,6 @@ function Portfolio() {
               exit={{ opacity: 0 }}
             />
 
-            {/* Modal Content */}
             <motion.div
               className="relative bg-gradient-to-br from-white/95 to-white/90 p-4 md:p-8 rounded-2xl md:rounded-3xl max-w-2xl w-full backdrop-blur-md shadow-2xl border border-white/30 max-h-[90vh] overflow-y-auto"
               initial={{ scale: 0.8, rotateX: 90 }}
@@ -451,7 +409,6 @@ function Portfolio() {
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
               <motion.button
                 onClick={() => setSelectedProject(null)}
                 className="absolute top-2 right-2 md:top-4 md:right-4 bg-modern-coral text-white p-2 rounded-full hover:bg-modern-teal transition-colors duration-300 z-10"
@@ -463,7 +420,6 @@ function Portfolio() {
                 </svg>
               </motion.button>
 
-              {/* Orbiting Decorations - Desktop only */}
               {!isMobile && [...Array(3)].map((_, i) => (
                 <motion.div
                   key={i}
@@ -482,7 +438,6 @@ function Portfolio() {
                 {selectedProject.title}
               </h3>
 
-              {/* Image */}
               <div className="relative overflow-hidden rounded-xl md:rounded-2xl mb-4 md:mb-6 shadow-lg">
                 <img
                   src={selectedProject.image}
@@ -496,10 +451,8 @@ function Portfolio() {
                 </div>
               </div>
 
-              {/* Description */}
               <p className="text-xs md:text-base text-gray-700 mb-4 md:mb-6">{selectedProject.description}</p>
 
-              {/* Tech Stack */}
               <div className="mb-4 md:mb-6">
                 <h4 className="font-bold mb-2 md:mb-3 text-base md:text-lg">Tech Stack</h4>
                 <div className="flex flex-wrap gap-2 md:gap-3">
@@ -516,7 +469,6 @@ function Portfolio() {
                 </div>
               </div>
 
-              {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
                 <div className="bg-gradient-to-br from-modern-coral/10 to-modern-coral/5 p-3 md:p-4 rounded-xl text-center">
                   <div className="text-2xl md:text-3xl font-bold text-modern-coral">
@@ -532,7 +484,6 @@ function Portfolio() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                 {selectedProject.live && (
                   <motion.a

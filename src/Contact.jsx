@@ -28,8 +28,8 @@ function Contact() {
     {
       name: "GitHub",
       icon: "🐙",
-      value: "github.com/CosmiCodeArcher",
-      link: "https://github.com/CosmiCodeArcher",
+      value: "github.com/Ochiponu-Awodi",
+      link: "https://github.com/Ochiponu-Awodi",
       color: "from-gray-600 to-gray-800",
       description: "Check out my code"
     },
@@ -77,7 +77,7 @@ function Contact() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto"
+          className="text-lg md:text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto"
         >
           I'm always open to new opportunities and collaborations. Feel free to reach out!
         </motion.p>

@@ -103,11 +103,11 @@ function About() {
         <h2 className="cool-text text-3xl md:text-5xl font-bold mb-4" data-text="About Me">
           About Me
         </h2>
-        <motion.p
+                  <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto"
+          className="text-lg md:text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto"
         >
           A passionate web developer crafting experiences that blend creativity with functionality
         </motion.p>

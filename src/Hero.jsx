@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {Tilt} from "react-tilt";
 import Portfolio from "./Portfolio";
 import About from "./About";
@@ -10,21 +10,34 @@ import PropTypes from "prop-types";
 function Hero({ currentSection, setCurrentSection }) {
   const [hoveredSection, setHoveredSection] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const savedState = loadState();
     if (savedState?.currentSection) setCurrentSection(savedState.currentSection);
+    if (savedState?.darkMode !== undefined) {
+      setDarkMode(savedState.darkMode);
+      if (savedState.darkMode) {
+        document.documentElement.classList.add('dark');
+      }
+    }
   }, [setCurrentSection]);
 
   useEffect(() => {
     if (currentSection) {
-      saveState({ currentSection });
+      saveState({ currentSection, darkMode });
       const sectionElement = document.getElementById(currentSection);
       if (sectionElement) {
         sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-  }, [currentSection]);
+  }, [currentSection, darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    saveState({ currentSection, darkMode: !darkMode });
+    document.documentElement.classList.toggle('dark');
+  };
 
   const handleInteraction = (section, isClick = false) => {
     if (isClick) {
@@ -72,12 +85,58 @@ function Hero({ currentSection, setCurrentSection }) {
 
   return (
     <div className="hero-container p-2 sm:p-4 md:p-8">
-      <img
-        src="/cca.jpg"
-        alt="Awodi brand text"
-        className="hero-logo w-[30%] sm:w-[25%] md:w-[20%] lg:w-[15%]"
-        onClick={toggleModal}
-      />
+      {/* Logo and Dark Mode Toggle */}
+      <div className="flex items-center justify-between mb-4">
+        <img
+          src="/cca.jpg"
+          alt="Awodi brand text"
+          className="hero-logo w-[30%] sm:w-[25%] md:w-[20%] lg:w-[15%]"
+          onClick={toggleModal}
+        />
+        
+        {/* Dark Mode Toggle */}
+        <motion.button
+          onClick={toggleDarkMode}
+          className="relative p-3 rounded-full bg-white/20 dark:bg-gray-800/50 backdrop-blur-md border-2 border-white/30 dark:border-gray-600/30 hover:shadow-glow transition-all duration-300"
+          whileHover={{ scale: 1.1, rotate: 180 }}
+          whileTap={{ scale: 0.9 }}
+          aria-label="Toggle dark mode"
+        >
+          <AnimatePresence mode="wait">
+            {darkMode ? (
+              <motion.span
+                key="sun"
+                initial={{ rotate: -180, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 180, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="block text-2xl"
+              >
+                ☀️
+              </motion.span>
+            ) : (
+              <motion.span
+                key="moon"
+                initial={{ rotate: 180, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -180, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="block text-2xl"
+              >
+                🌙
+              </motion.span>
+            )}
+          </AnimatePresence>
+          
+          {/* Glow effect */}
+          <motion.div
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-modern-coral to-modern-teal opacity-0 group-hover:opacity-20"
+            animate={darkMode ? { opacity: [0, 0.3, 0] } : { opacity: [0, 0.2, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.button>
+      </div>
+      
       {!currentSection && (
         <div className="hero-welcome">
           <span
@@ -99,9 +158,9 @@ function Hero({ currentSection, setCurrentSection }) {
             >
               ×
             </button>
-            <h2 className="modal-heading text-xl md:text-2xl">Welcome to my portfolio!</h2>
+            <h2 className="modal-heading text-xl md:text-2xl">Welcome to Awodi!</h2>
             <p className="modal-text text-xs md:text-sm">
-              Hey there! Explore my work, learn about me, or drop a message, I’m excited you’re here!
+              Hey there! I'm Awodi, a web developer crafting responsive and creative experiences. Explore my work, learn about me, or drop a message—I'm excited you're here!
             </p>
             <button
               type="button"
@@ -114,7 +173,7 @@ function Hero({ currentSection, setCurrentSection }) {
         </div>
       )}
       <div className="nav-container mt-4 sm:mt-6 md:mt-8">
-        <nav className="hero-nav flex flex-row gap-2 sm:gap-4 md:gap-6 relative overflow-hidden bg-gradient-to-r from-modern-coral/20 to-modern-teal/20 py-2 rounded-lg">
+        <nav className="hero-nav flex flex-row gap-2 sm:gap-4 md:gap-6 relative overflow-hidden bg-gradient-to-r from-modern-coral/20 to-modern-teal/20 dark:from-modern-coral/30 dark:to-modern-teal/30 py-2 rounded-lg">
           {sections.map(({ id, label, preview }, index) => (
             <Tilt key={id} options={{ max: 25, scale: 1.05, speed: 300 }}>
               <motion.div
@@ -129,13 +188,13 @@ function Hero({ currentSection, setCurrentSection }) {
               >
               <button
                 type="button"
-                className={`nav-button ${currentSection === id ? "text-modern-coral" : "text-white"} text-sm sm:text-base md:text-lg py-2 sm:py-3 hover:text-modern-teal transition-all duration-300 relative z-10`}
+                className={`nav-button ${currentSection === id ? "text-modern-coral" : "text-white dark:text-gray-200"} text-sm sm:text-base md:text-lg py-2 sm:py-3 hover:text-modern-teal transition-all duration-300 relative z-10`}
                 aria-label={`Go to ${label}`}
               >
                 {label}
                 {hoveredSection === id && (
                     <motion.span
-                      className="absolute inset-0 bg-modern-coral/30 rounded-full"
+                      className="absolute inset-0 bg-modern-coral/30 dark:bg-modern-coral/40 rounded-full"
                       initial={{ scale: 0 }}
                       animate={{ scale: 2, opacity: 0 }}
                       transition={{ duration: 0.4 }}
