@@ -99,9 +99,9 @@ function Hero({ currentSection, setCurrentSection }) {
             >
               ×
             </button>
-            <h2 className="modal-heading text-xl md:text-2xl">Welcome to Awodi!</h2>
+            <h2 className="modal-heading text-xl md:text-2xl">Welcome to my portfolio!</h2>
             <p className="modal-text text-xs md:text-sm">
-              Hey there! I’m Awodi, a web developer crafting responsive and creative experiences. Explore my work, learn about me, or drop a message—I’m excited you’re here!
+              Hey there! Explore my work, learn about me, or drop a message, I’m excited you’re here!
             </p>
             <button
               type="button"
