@@ -9,7 +9,7 @@ function Footer({ onSectionChange }) {
         <div className="footer-layout">
           <div className="footer-text-center">
             <img
-              src="/Awodi.png"
+              src="/cca.jpg"
               alt="Awodi Logo"
               className="footer-logo"
             />
@@ -45,7 +45,7 @@ function Footer({ onSectionChange }) {
           <div className="footer-text-right">
             <div className="social-container">
               <a
-                href="https://github.com/Ochiponu-Awodi"
+                href="https://github.com/CosmiCodeArcher"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-link text-gray-700 hover:scale-110 transition-all duration-300"

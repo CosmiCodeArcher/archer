@@ -157,7 +157,7 @@ const BrandBubbles = () => {
           onMouseLeave={() => handleHover(bubble.id, false)}
           onClick={() => handleClick(bubble.id)}
         >
-          awodi
+          Tap Me
         </div>
       ))}
       {miniBubbles.map((mini) => (

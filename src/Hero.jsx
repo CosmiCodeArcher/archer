@@ -73,7 +73,7 @@ function Hero({ currentSection, setCurrentSection }) {
   return (
     <div className="hero-container p-2 sm:p-4 md:p-8">
       <img
-        src="/Awodi.png"
+        src="/cca.jpg"
         alt="Awodi brand text"
         className="hero-logo w-[30%] sm:w-[25%] md:w-[20%] lg:w-[15%]"
         onClick={toggleModal}
