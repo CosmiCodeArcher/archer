@@ -45,9 +45,36 @@
     @apply min-h-screen flex flex-col bg-gradient-to-br from-vintage-beige via-vintage-sage to-modern-teal bg-[length:200%_200%] animate-gradient-shift relative transition-colors duration-300;
   }
   
+  /* Dark Mode Background - Option: Darker Coral + Deep Teal */
   .dark .layout-container {
-    @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900;
+    @apply bg-gradient-to-br from-teal-900/30 via-gray-900 to-cyan-900/30;
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
   }
+  
+  /* Alternative Options (comment/uncomment to try):
+  
+  Option 1: Coral Warmth
+  .dark .layout-container {
+    @apply bg-gradient-to-br from-gray-900 via-red-900/25 to-orange-800/25;
+  }
+  
+  Option 2: Teal Professional  
+  .dark .layout-container {
+    @apply bg-gradient-to-br from-gray-900 via-teal-900/30 to-cyan-900/30;
+  }
+  
+  Option 3: Balanced Coral-Teal
+  .dark .layout-container {
+    @apply bg-gradient-to-br from-gray-900 via-orange-900/30 to-teal-900/30;
+  }
+  
+  Option 4: Deep Ocean
+  .dark .layout-container {
+    @apply bg-gradient-to-br from-gray-900 via-blue-900/25 to-cyan-900/30;
+  }
+  
+  */
   
   .layout-main {
     @apply flex-grow z-10;
@@ -428,7 +455,7 @@
   body {
     background: white !important;
   }
-
+}
   
   .layout-main {
     @apply flex-grow z-10;
@@ -599,7 +626,7 @@
   .success-button {
     @apply px-8 py-3 rounded-xl font-bold text-base transition-all duration-300;
   }
-}
+
 
 @layer utilities {
   .text-glow {

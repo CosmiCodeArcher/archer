@@ -111,7 +111,7 @@ function Footer({ onSectionChange }) {
             className="footer-text-center space-y-3"
           >
             <motion.img
-              src="/cca.jpg"
+              src="/Awodi.png"
               alt="Awodi Logo"
               className="footer-logo"
               whileHover={{ rotate: 360, scale: 1.1 }}
@@ -138,7 +138,7 @@ function Footer({ onSectionChange }) {
             transition={{ delay: 0.1 }}
             className="text-center"
           >
-            <h3 className="text-lg font-bold mb-4 text-gray-800">Quick Links</h3>
+            <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Quick Links</h3>
             <nav className="flex flex-col gap-3">
               {navLinks.map((link) => (
                 <motion.button
@@ -147,7 +147,7 @@ function Footer({ onSectionChange }) {
                   onClick={() => onSectionChange(link.name)}
                   onMouseEnter={() => setHoveredLink(link.name)}
                   onMouseLeave={() => setHoveredLink(null)}
-                  className="footer-button relative group inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/20 transition-all duration-300"
+                  className="footer-button relative group inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/5 dark:bg-gray-700/50 hover:bg-white/20 dark:hover:bg-gray-700/80 transition-all duration-300 text-gray-800 dark:text-gray-100 font-medium"
                   whileHover={{ scale: 1.05, x: 5 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -174,7 +174,7 @@ function Footer({ onSectionChange }) {
             className="footer-text-right space-y-4"
           >
             <div>
-              <h3 className="text-lg font-bold mb-4 text-gray-800">Connect</h3>
+              <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Connect</h3>
               <div className="social-container">
                 {socialLinks.map((social, index) => (
                   <motion.a
@@ -253,7 +253,7 @@ function Footer({ onSectionChange }) {
               whileHover={{ scale: 1.05 }}
               className="text-xs bg-white/20 px-3 py-1 rounded-full"
             >
-              v2.0.0
+              v 2 . 1 . 0
             </motion.span>
             <motion.a
               href="#"

@@ -17,7 +17,7 @@ const ProjectCard = memo(({ project, index, viewMode, cardWidth, isMobile, onSel
     >
       <Tilt options={{ max: isMobile ? 10 : 15, scale: isMobile ? 1.02 : 1.03 }}>
         <motion.div
-          className="portfolio-card bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-md rounded-[20px] p-4 md:p-5 shadow-lg hover:shadow-glow transition-all duration-300 cursor-pointer relative overflow-hidden h-full border border-white/30"
+          className="portfolio-card bg-gradient-to-br from-white/80 to-white/60 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-md rounded-[20px] p-4 md:p-5 shadow-lg hover:shadow-glow transition-all duration-300 cursor-pointer relative overflow-hidden h-full border border-white/30 dark:border-modern-teal/30"
           whileHover={{ y: -5 }}
           onClick={() => onSelect(project)}
           onMouseEnter={() => !isMobile && onHover(project.title)}
@@ -46,7 +46,7 @@ const ProjectCard = memo(({ project, index, viewMode, cardWidth, isMobile, onSel
           <h3 className="text-base md:text-xl font-bold text-modern-coral mb-2">
             {project.title}
           </h3>
-          <p className="text-xs md:text-sm text-gray-700 dark:text-gray-200 mb-3 line-clamp-2">
+          <p className="text-xs md:text-sm text-gray-700 dark:text-gray-100 mb-3 line-clamp-2 font-medium">
             {project.description}
           </p>
 
@@ -55,7 +55,7 @@ const ProjectCard = memo(({ project, index, viewMode, cardWidth, isMobile, onSel
             {project.technologies.map((tag) => (
               <span
                 key={tag}
-                className="text-[9px] md:text-xs bg-modern-teal/20 dark:bg-modern-teal/30 text-modern-teal dark:text-modern-teal px-2 py-0.5 md:py-1 rounded-full font-medium"
+                className="text-[9px] md:text-xs bg-modern-teal/20 dark:bg-modern-teal/40 text-modern-teal dark:text-white px-2 py-0.5 md:py-1 rounded-full font-bold"
               >
                 {tag}
               </span>
@@ -63,7 +63,7 @@ const ProjectCard = memo(({ project, index, viewMode, cardWidth, isMobile, onSel
           </div>
 
           {/* Stats */}
-          <div className="stats flex justify-between text-[10px] md:text-sm text-gray-600 dark:text-gray-300 pt-3 border-t border-gray-200 dark:border-gray-700">
+          <div className="stats flex justify-between text-[10px] md:text-sm text-gray-600 dark:text-gray-100 pt-3 border-t border-gray-200 dark:border-modern-teal/30 font-medium">
             <span className="flex items-center gap-1">
               📝 <CountUp end={project.stats.commits} duration={2} />+ commits
             </span>
@@ -100,6 +100,28 @@ function Portfolio() {
   const carouselRef = useRef(null);
 
   const projects = [
+    {
+      title: "CreateSphere",
+      description: "Web3 dApp for project crowdfunding.",
+      technologies: ["React", "Vite", "Solidity", "Ethers", "TailwindCSS"],
+      category: "Web3",
+      image: "/CreateSphere.png",
+      live: "https://create-sphere.vercel.app/",
+      stats: { commits: 11, hours: 336 },
+      qr: "/create-sphere-qr.png",
+      highlight: "Full-Stack",
+    },
+    {
+      title: "Ethblock explorer",
+      description: "Block explorer for the Ethereum blockchain.",
+      technologies: ["HTML", "JS", "Vite", "CSS"],
+      category: "Web3",
+      image: "/blockexp.png",
+      live: "https://ethblockexplorer-livid.vercel.app/",
+      stats: { commits: 1, hours: 5 },
+      qr: "/blockexp-qr.png",
+      highlight: "Full-Stack",
+    },
     {
       title: "TeeDo",
       description: "Full-Stack Todo App, built solo with AI assist, March 2025",
@@ -207,7 +229,7 @@ function Portfolio() {
               className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
                 viewMode === "carousel"
                   ? "bg-modern-coral text-white"
-                  : "bg-white/50 text-gray-700 hover:bg-white/80"
+                  : "bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 hover:bg-white/80 dark:hover:bg-gray-700/80"
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -219,7 +241,7 @@ function Portfolio() {
               className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 ${
                 viewMode === "grid"
                   ? "bg-modern-coral text-white"
-                  : "bg-white/50 text-gray-700 hover:bg-white/80"
+                  : "bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 hover:bg-white/80 dark:hover:bg-gray-700/80"
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -255,13 +277,13 @@ function Portfolio() {
                 <div className={`bg-gradient-to-r ${filterItem.color} p-0.5 rounded-xl md:rounded-2xl`}>
                   <div className={`px-3 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl backdrop-blur-sm transition-all duration-300 ${
                     filter === filterItem.name
-                      ? "bg-white/90 shadow-glow"
-                      : "bg-white/70 hover:bg-white/90"
+                      ? "bg-white/90 dark:bg-gray-800/90 shadow-glow"
+                      : "bg-white/70 dark:bg-gray-800/70 hover:bg-white/90 dark:hover:bg-gray-800/90"
                   }`}>
                     <div className="flex items-center gap-1.5 md:gap-2">
                       <span className="text-lg md:text-2xl">{filterItem.icon}</span>
                       <span className={`font-bold text-xs md:text-base ${
-                        filter === filterItem.name ? "text-transparent bg-gradient-to-r bg-clip-text " + filterItem.color : ""
+                        filter === filterItem.name ? "text-transparent bg-gradient-to-r bg-clip-text " + filterItem.color : "dark:text-gray-100"
                       }`}>
                         {filterItem.name}
                       </span>
@@ -309,7 +331,7 @@ function Portfolio() {
         >
           <div className="text-5xl md:text-6xl mb-4">🚀</div>
           <h3 className="text-xl md:text-2xl font-bold mb-2 text-modern-coral">Coming Soon!</h3>
-          <p className="text-sm md:text-base text-gray-600">Web3 projects are in development. Stay tuned!</p>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-100">Web3 projects are in development. Stay tuned!</p>
         </motion.div>
       )}
 
@@ -343,7 +365,7 @@ function Portfolio() {
                 <>
                   <motion.button
                     onClick={() => setCarouselX((x) => Math.min(x + cardWidth, 0))}
-                    className="absolute left-1 md:left-2 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-modern-coral p-2 md:p-3 rounded-full hover:bg-modern-coral hover:text-white transition-all duration-300 shadow-lg z-10"
+                    className="absolute left-1 md:left-2 top-1/2 transform -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-modern-coral p-2 md:p-3 rounded-full hover:bg-modern-coral hover:text-white transition-all duration-300 shadow-lg z-10"
                     whileHover={{ scale: 1.1, x: -5 }}
                     whileTap={{ scale: 0.9 }}
                   >
@@ -353,7 +375,7 @@ function Portfolio() {
                   </motion.button>
                   <motion.button
                     onClick={() => setCarouselX((x) => Math.max(x - cardWidth, -(filteredProjects.length * cardWidth)))}
-                    className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-modern-coral p-2 md:p-3 rounded-full hover:bg-modern-coral hover:text-white transition-all duration-300 shadow-lg z-10"
+                    className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-modern-coral p-2 md:p-3 rounded-full hover:bg-modern-coral hover:text-white transition-all duration-300 shadow-lg z-10"
                     whileHover={{ scale: 1.1, x: 5 }}
                     whileTap={{ scale: 0.9 }}
                   >
@@ -402,7 +424,7 @@ function Portfolio() {
             />
 
             <motion.div
-              className="relative bg-gradient-to-br from-white/95 to-white/90 p-4 md:p-8 rounded-2xl md:rounded-3xl max-w-2xl w-full backdrop-blur-md shadow-2xl border border-white/30 max-h-[90vh] overflow-y-auto"
+              className="relative bg-gradient-to-br from-white/95 to-white/90 dark:from-gray-800/95 dark:to-gray-900/95 p-4 md:p-8 rounded-2xl md:rounded-3xl max-w-2xl w-full backdrop-blur-md shadow-2xl border border-white/30 dark:border-modern-teal/30 max-h-[90vh] overflow-y-auto"
               initial={{ scale: 0.8, rotateX: 90 }}
               animate={{ scale: 1, rotateX: 0 }}
               exit={{ scale: 0.8, rotateX: -90 }}
@@ -451,17 +473,17 @@ function Portfolio() {
                 </div>
               </div>
 
-              <p className="text-xs md:text-base text-gray-700 mb-4 md:mb-6">{selectedProject.description}</p>
+              <p className="text-xs md:text-base text-gray-700 dark:text-gray-100 mb-4 md:mb-6 font-medium">{selectedProject.description}</p>
 
               <div className="mb-4 md:mb-6">
-                <h4 className="font-bold mb-2 md:mb-3 text-base md:text-lg">Tech Stack</h4>
+                <h4 className="font-bold mb-2 md:mb-3 text-base md:text-lg dark:text-gray-100">Tech Stack</h4>
                 <div className="flex flex-wrap gap-2 md:gap-3">
                   {selectedProject.technologies.map((tag) => (
                     <motion.span
                       key={tag}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="px-3 py-1 md:px-4 md:py-2 bg-gradient-to-r from-modern-teal/20 to-modern-coral/20 text-gray-800 rounded-full text-xs md:text-sm font-medium border border-modern-teal/30"
+                      className="px-3 py-1 md:px-4 md:py-2 bg-gradient-to-r from-modern-teal/20 to-modern-coral/20 dark:from-modern-teal/40 dark:to-modern-coral/40 text-gray-800 dark:text-white rounded-full text-xs md:text-sm font-bold border border-modern-teal/30 dark:border-modern-teal/50"
                     >
                       {tag}
                     </motion.span>
@@ -470,17 +492,17 @@ function Portfolio() {
               </div>
 
               <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
-                <div className="bg-gradient-to-br from-modern-coral/10 to-modern-coral/5 p-3 md:p-4 rounded-xl text-center">
+                <div className="bg-gradient-to-br from-modern-coral/10 to-modern-coral/5 dark:from-modern-coral/20 dark:to-modern-coral/10 p-3 md:p-4 rounded-xl text-center border dark:border-modern-coral/30">
                   <div className="text-2xl md:text-3xl font-bold text-modern-coral">
                     <CountUp end={selectedProject.stats.commits} duration={2} />+
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">Commits</div>
+                  <div className="text-xs md:text-sm text-gray-600 dark:text-gray-100 font-medium">Commits</div>
                 </div>
-                <div className="bg-gradient-to-br from-modern-teal/10 to-modern-teal/5 p-3 md:p-4 rounded-xl text-center">
+                <div className="bg-gradient-to-br from-modern-teal/10 to-modern-teal/5 dark:from-modern-teal/20 dark:to-modern-teal/10 p-3 md:p-4 rounded-xl text-center border dark:border-modern-teal/30">
                   <div className="text-2xl md:text-3xl font-bold text-modern-teal">
                     <CountUp end={selectedProject.stats.hours} duration={2} />+
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">Hours</div>
+                  <div className="text-xs md:text-sm text-gray-600 dark:text-gray-100 font-medium">Hours</div>
                 </div>
               </div>
 
@@ -501,7 +523,7 @@ function Portfolio() {
                   href={selectedProject.qr || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2.5 md:px-6 md:py-3 bg-white/70 backdrop-blur-sm text-gray-800 rounded-xl font-medium hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base"
+                  className="px-4 py-2.5 md:px-6 md:py-3 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm text-gray-800 dark:text-gray-100 rounded-xl font-bold hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

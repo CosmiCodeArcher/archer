@@ -106,13 +106,13 @@ function Contact() {
                 className="block"
               >
                 <div className={`bg-gradient-to-br ${social.color} p-0.5 rounded-2xl h-full`}>
-                  <div className="bg-white/95 backdrop-blur-sm p-6 rounded-2xl h-full hover:bg-white/80 transition-all duration-300 group relative overflow-hidden">
+                  <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-6 rounded-2xl h-full hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 group relative overflow-hidden border dark:border-modern-teal/30">
                     <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                       {social.icon}
                     </div>
-                    <h3 className="text-xl font-bold mb-2">{social.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{social.description}</p>
-                    <p className="text-xs text-gray-500 break-all">{social.value}</p>
+                    <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{social.name}</h3>
+                    <p className="text-sm text-gray-700 dark:text-gray-100 mb-2 font-medium">{social.description}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-200 break-all font-medium">{social.value}</p>
                     
                     {/* Hover effect particles */}
                     <motion.div
@@ -149,7 +149,7 @@ function Contact() {
         transition={{ delay: 0.4 }}
       >
         <Tilt options={{ max: 5, scale: 1.01 }}>
-          <div className="bg-gradient-to-br from-modern-coral/10 to-modern-teal/10 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/30 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-modern-coral/10 to-modern-teal/10 dark:from-modern-coral/20 dark:to-modern-teal/20 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/30 dark:border-gray-700/30 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-modern-coral/20 to-transparent rounded-full blur-3xl -z-10" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-modern-teal/20 to-transparent rounded-full blur-3xl -z-10" />
@@ -180,7 +180,7 @@ function Contact() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("name")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-coral transition-all duration-300 peer placeholder-transparent"
+                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-coral transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
                   placeholder="Name"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -188,8 +188,8 @@ function Contact() {
                   htmlFor="name"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "name" || formData.name
-                      ? "-top-3 text-xs bg-white px-2 text-modern-coral font-semibold"
-                      : "top-4 text-gray-500"
+                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-modern-coral font-semibold"
+                      : "top-4 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   Your Name
@@ -219,7 +219,7 @@ function Contact() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-teal transition-all duration-300 peer placeholder-transparent"
+                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-teal transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
                   placeholder="Email"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -227,8 +227,8 @@ function Contact() {
                   htmlFor="email"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "email" || formData.email
-                      ? "-top-3 text-xs bg-white px-2 text-modern-teal font-semibold"
-                      : "top-4 text-gray-500"
+                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-modern-teal font-semibold"
+                      : "top-4 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   Your Email
@@ -257,7 +257,7 @@ function Contact() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("message")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-vintage-sage transition-all duration-300 resize-none peer placeholder-transparent"
+                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-vintage-sage transition-all duration-300 resize-none peer placeholder-transparent text-gray-900 dark:text-gray-100"
                   placeholder="Message"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -265,8 +265,8 @@ function Contact() {
                   htmlFor="message"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "message" || formData.message
-                      ? "-top-3 text-xs bg-white px-2 text-vintage-sage font-semibold"
-                      : "top-4 text-gray-500"
+                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-vintage-sage font-semibold"
+                      : "top-4 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   Your Message
@@ -342,7 +342,7 @@ function Contact() {
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-xs text-right text-gray-500"
+                  className="text-xs text-right text-gray-500 dark:text-gray-400"
                 >
                   {formData.message.length} characters
                 </motion.p>
@@ -371,12 +371,12 @@ function Contact() {
             transition={{ delay: 0.6 + index * 0.1, type: "spring" }}
             whileHover={{ scale: 1.05 }}
           >
-            <div className="bg-white/50 backdrop-blur-sm p-4 rounded-xl border border-white/30 hover:shadow-glow transition-all duration-300">
+            <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-4 rounded-xl border border-white/30 dark:border-gray-700/30 hover:shadow-glow transition-all duration-300">
               <div className="text-2xl mb-2">{stat.icon}</div>
               <div className="text-2xl md:text-3xl font-bold text-modern-coral mb-1">
                 {stat.value}
               </div>
-              <div className="text-xs md:text-sm text-gray-600">{stat.label}</div>
+              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300">{stat.label}</div>
             </div>
           </motion.div>
         ))}

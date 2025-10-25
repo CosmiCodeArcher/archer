@@ -103,7 +103,7 @@ function About() {
         <h2 className="cool-text text-3xl md:text-5xl font-bold mb-4" data-text="About Me">
           About Me
         </h2>
-                  <motion.p
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -122,10 +122,10 @@ function About() {
       >
         <motion.div variants={itemVariants}>
           <Tilt options={{ max: 15, scale: 1.02 }}>
-            <div className="bg-gradient-to-br from-modern-coral/10 to-modern-teal/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:shadow-glow transition-all duration-300">
+            <div className="bg-gradient-to-br from-modern-coral/10 to-modern-teal/10 dark:from-modern-coral/20 dark:to-modern-teal/20 backdrop-blur-md p-6 rounded-2xl border border-white/20 dark:border-gray-700/30 hover:shadow-glow transition-all duration-300">
               <div className="text-4xl mb-4">👨‍💻</div>
               <h3 className="text-xl font-bold mb-3 text-modern-coral">The Journey</h3>
-              <p className="text-sm md:text-base text-gray-700">
+              <p className="text-sm md:text-base text-gray-700 dark:text-gray-200">
                 My journey began from the intimidation and ambition I felt when I saw lines of code 
                 for the first time. Since then, I've immersed myself in the world of coding, building 
                 over 40 web applications that taught me invaluable lessons.
@@ -136,10 +136,10 @@ function About() {
 
         <motion.div variants={itemVariants}>
           <Tilt options={{ max: 15, scale: 1.02 }}>
-            <div className="bg-gradient-to-br from-modern-teal/10 to-vintage-sage/20 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:shadow-glow transition-all duration-300">
+            <div className="bg-gradient-to-br from-modern-teal/10 to-vintage-sage/20 dark:from-modern-teal/20 dark:to-vintage-sage/30 backdrop-blur-md p-6 rounded-2xl border border-white/20 dark:border-gray-700/30 hover:shadow-glow transition-all duration-300">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-bold mb-3 text-modern-teal">The Vision</h3>
-              <p className="text-sm md:text-base text-gray-700">
+              <p className="text-sm md:text-base text-gray-700 dark:text-gray-200">
                 Looking ahead, I'm excited to dive further into React technologies like Next.js. 
                 I'm always open to new challenges and opportunities to grow as a developer, 
                 constantly pushing boundaries.
@@ -175,12 +175,12 @@ function About() {
               <Tilt options={{ max: 20, scale: 1.05 }}>
                 <div className="relative group">
                   <div className={`bg-gradient-to-br ${skill.color} p-0.5 rounded-xl`}>
-                    <div className="bg-white/90 backdrop-blur-sm p-4 rounded-xl h-full">
+                    <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-4 rounded-xl h-full">
                       <div className="text-3xl md:text-4xl mb-2 text-center">{skill.icon}</div>
-                      <h4 className="font-bold text-center mb-2 text-sm md:text-base">{skill.name}</h4>
+                      <h4 className="font-bold text-center mb-2 text-sm md:text-base dark:text-gray-100">{skill.name}</h4>
                       
                       {/* Skill Level Bar */}
-                      <div className="w-full bg-gray-200 rounded-full h-2 mb-2 overflow-hidden">
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2 overflow-hidden">
                         <motion.div
                           className={`h-full bg-gradient-to-r ${skill.color} rounded-full`}
                           initial={{ width: 0 }}
@@ -188,7 +188,7 @@ function About() {
                           transition={{ duration: 1, delay: index * 0.1 }}
                         />
                       </div>
-                      <p className="text-xs text-center text-gray-600">{skill.level}%</p>
+                      <p className="text-xs text-center text-gray-800 dark:text-white font-bold">{skill.level}%</p>
                       
                       {/* Tooltip */}
                       {activeSkill === skill.name && (
@@ -259,7 +259,7 @@ function About() {
                 <Tilt options={{ max: 10, scale: 1.02 }}>
                   <motion.div
                     whileHover={{ scale: 1.03 }}
-                    className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-white/30 shadow-lg hover:shadow-glow transition-all duration-300"
+                    className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm p-6 rounded-2xl border border-white/30 dark:border-modern-coral/30 shadow-lg hover:shadow-glow transition-all duration-300"
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-3xl">{stage.icon}</span>
@@ -267,10 +267,10 @@ function About() {
                         <div className="text-xs md:text-sm font-semibold text-modern-coral uppercase tracking-wider">
                           {stage.year}
                         </div>
-                        <h4 className="text-lg md:text-xl font-bold">{stage.title}</h4>
+                        <h4 className="text-lg md:text-xl font-bold dark:text-gray-100">{stage.title}</h4>
                       </div>
                     </div>
-                    <p className="text-sm md:text-base text-gray-700">{stage.description}</p>
+                    <p className="text-sm md:text-base text-gray-700 dark:text-white font-medium">{stage.description}</p>
                   </motion.div>
                 </Tilt>
               </div>
@@ -294,13 +294,13 @@ function About() {
         transition={{ delay: 0.6 }}
       >
         <Tilt options={{ max: 5, scale: 1.01 }}>
-          <div className="bg-gradient-to-br from-vintage-sage/30 to-modern-teal/20 backdrop-blur-md p-8 rounded-2xl border border-white/20">
+          <div className="bg-gradient-to-br from-vintage-sage/30 to-modern-teal/20 dark:from-vintage-sage/40 dark:to-modern-teal/30 backdrop-blur-md p-8 rounded-2xl border border-white/20 dark:border-gray-700/30">
             <h3 className="text-2xl md:text-3xl font-bold mb-4 text-center">
               <span className="bg-gradient-to-r from-modern-coral to-vintage-sage bg-clip-text text-transparent">
                 Beyond the Code
               </span>
             </h3>
-            <p className="text-center text-base md:text-lg text-gray-700 max-w-2xl mx-auto">
+            <p className="text-center text-base md:text-lg text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
               When I'm not coding, you can find me immersing myself in various arts. I find that 
               these activities complement my development work by enhancing my mindset and creativity, 
               bringing fresh perspectives to problem-solving.
