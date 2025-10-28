@@ -12,8 +12,8 @@ function Contact() {
     {
       name: "Email",
       icon: "✉️",
-      value: "awodiomale@gmail.com",
-      link: "mailto:awodiomale@gmail.com",
+      value: "ochiponumusa@gmail.com",
+      link: "mailto:ochiponumusa@gmail.com",
       color: "from-red-400 to-pink-400",
       description: "Drop me an email"
     },
@@ -28,8 +28,8 @@ function Contact() {
     {
       name: "GitHub",
       icon: "🐙",
-      value: "github.com/Ochiponu-Awodi",
-      link: "https://github.com/Ochiponu-Awodi",
+      value: "github.com/CosmiCodeArcher",
+      link: "https://github.com/CosmiCodeArcher",
       color: "from-gray-600 to-gray-800",
       description: "Check out my code"
     },
