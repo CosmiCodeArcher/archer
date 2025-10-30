@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tilt } from "react-tilt";
+import { Link } from "react-router-dom";
 
 function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -12,8 +13,8 @@ function Contact() {
     {
       name: "Email",
       icon: "✉️",
-      value: "ochiponumusa@gmail.com",
-      link: "mailto:ochiponumusa@gmail.com",
+      value: "awodiomale@gmail.com",
+      link: "mailto:awodiomale@gmail.com",
       color: "from-red-400 to-pink-400",
       description: "Drop me an email"
     },
@@ -28,8 +29,8 @@ function Contact() {
     {
       name: "GitHub",
       icon: "🐙",
-      value: "github.com/CosmiCodeArcher",
-      link: "https://github.com/CosmiCodeArcher",
+      value: "github.com/Ochiponu-Awodi",
+      link: "https://github.com/Ochiponu-Awodi",
       color: "from-gray-600 to-gray-800",
       description: "Check out my code"
     },
@@ -142,6 +143,47 @@ function Contact() {
         ))}
       </motion.div>
 
+      {/* Meeting Scheduler Banner - Subtle Enhancement */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="mb-8"
+      >
+        <Link to="/meeting">
+          <motion.div
+            whileHover={{ scale: 1.02, y: -2 }}
+            className="bg-gradient-to-r from-modern-teal/10 to-modern-coral/10 dark:from-modern-teal/20 dark:to-modern-coral/20 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-dashed border-modern-teal/30 dark:border-modern-teal/50 hover:border-modern-coral/50 dark:hover:border-modern-coral/70 transition-all duration-300 cursor-pointer group"
+          >
+            <div className="flex items-center gap-4">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-4xl md:text-5xl"
+              >
+                📅
+              </motion.div>
+              <div className="flex-1">
+                <h3 className="text-base md:text-lg font-bold text-gray-800 dark:text-white mb-1 group-hover:text-modern-coral transition-colors duration-300">
+                  Prefer a live conversation?
+                </h3>
+                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-200">
+                  Schedule a meeting at a time that works for you →
+                </p>
+              </div>
+              <motion.div
+                className="hidden md:block"
+                whileHover={{ x: 5 }}
+              >
+                <svg className="w-6 h-6 text-modern-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </motion.div>
+            </div>
+          </motion.div>
+        </Link>
+      </motion.div>
+
       {/* Contact Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -180,7 +222,7 @@ function Contact() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("name")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-coral transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
+                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-coral transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-white"
                   placeholder="Name"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -188,8 +230,8 @@ function Contact() {
                   htmlFor="name"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "name" || formData.name
-                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-modern-coral font-semibold"
-                      : "top-4 text-gray-500 dark:text-gray-400"
+                      ? "-top-3 text-xs bg-white dark:bg-gray-700 px-2 text-modern-coral font-semibold"
+                      : "top-4 text-gray-500 dark:text-gray-300"
                   }`}
                 >
                   Your Name
@@ -219,7 +261,7 @@ function Contact() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-teal transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
+                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-teal transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-white"
                   placeholder="Email"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -227,8 +269,8 @@ function Contact() {
                   htmlFor="email"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "email" || formData.email
-                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-modern-teal font-semibold"
-                      : "top-4 text-gray-500 dark:text-gray-400"
+                      ? "-top-3 text-xs bg-white dark:bg-gray-700 px-2 text-modern-teal font-semibold"
+                      : "top-4 text-gray-500 dark:text-gray-300"
                   }`}
                 >
                   Your Email
@@ -257,7 +299,7 @@ function Contact() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("message")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-vintage-sage transition-all duration-300 resize-none peer placeholder-transparent text-gray-900 dark:text-gray-100"
+                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-vintage-sage transition-all duration-300 resize-none peer placeholder-transparent text-gray-900 dark:text-white"
                   placeholder="Message"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -265,8 +307,8 @@ function Contact() {
                   htmlFor="message"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "message" || formData.message
-                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-vintage-sage font-semibold"
-                      : "top-4 text-gray-500 dark:text-gray-400"
+                      ? "-top-3 text-xs bg-white dark:bg-gray-700 px-2 text-vintage-sage font-semibold"
+                      : "top-4 text-gray-500 dark:text-gray-300"
                   }`}
                 >
                   Your Message

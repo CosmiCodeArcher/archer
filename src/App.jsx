@@ -2,12 +2,14 @@ import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } 
 import Layout from "./Layout";
 import Success from "./success";
 import ContactPage from "./ContactPage";
+import MeetingScheduler from "./MeetingScheduler";
 
 const router = createBrowserRouter ( createRoutesFromElements (
   <>
     <Route path="/" element={<Layout />} />
     <Route path="/success" element={<Success />} />
     <Route path="/contact" element={<ContactPage />} />
+    <Route path="/meeting" element={<MeetingScheduler />} />
   </>
 ) )
 

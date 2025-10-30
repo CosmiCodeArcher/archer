@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Footer({ onSectionChange }) {
   const currentYear = new Date().getFullYear();
@@ -97,7 +98,7 @@ function Footer({ onSectionChange }) {
               <div className="text-xl md:text-2xl font-bold text-modern-coral mb-1">
                 {stat.value}
               </div>
-              <div className="text-xs md:text-sm text-gray-700">{stat.label}</div>
+              <div className="text-xs md:text-sm text-gray-700 dark:text-gray-300">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -120,7 +121,7 @@ function Footer({ onSectionChange }) {
             <p className="footer-desc max-w-xs mx-auto md:mx-0">
               Creating responsive and user-friendly web experiences with passion and precision
             </p>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-gray-600">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-gray-600 dark:text-gray-300">
               <motion.span
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -182,7 +183,7 @@ function Footer({ onSectionChange }) {
                     href={social.url}
                     target={social.name !== "Email" ? "_blank" : undefined}
                     rel={social.name !== "Email" ? "noopener noreferrer" : undefined}
-                    className={`social-link text-gray-700 ${social.color} relative group`}
+                    className={`social-link text-gray-700 dark:text-gray-200 ${social.color} relative group`}
                     aria-label={social.name}
                     whileHover={{ scale: 1.2, rotate: 360 }}
                     whileTap={{ scale: 0.9 }}
@@ -193,7 +194,7 @@ function Footer({ onSectionChange }) {
                     {social.icon}
                     
                     {/* Tooltip */}
-                    <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                       {social.name}
                     </span>
                     
@@ -209,7 +210,7 @@ function Footer({ onSectionChange }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium"
+              className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium"
             >
               <motion.span
                 animate={{ scale: [1, 1.3, 1] }}
@@ -221,20 +222,101 @@ function Footer({ onSectionChange }) {
           </motion.div>
         </div>
 
+        {/* Meeting CTA Banner - Prominent */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="my-12 max-w-4xl mx-auto"
+        >
+          <Link to="/meeting">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="relative overflow-hidden rounded-3xl group cursor-pointer"
+            >
+              {/* Animated background gradient */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-modern-coral via-modern-teal to-modern-coral"
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                style={{ backgroundSize: "200% 200%" }}
+              />
+              
+              {/* Content */}
+              <div className="relative p-8 md:p-12 text-center">
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 360],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-5xl md:text-6xl mb-4"
+                >
+                  🗓️
+                </motion.div>
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                  Ready to discuss your project?
+                </h3>
+                <p className="text-white/90 text-base md:text-lg mb-6">
+                  Let's find a time that works for both of us. Quick, easy scheduling!
+                </p>
+                <motion.div
+                  className="inline-flex items-center gap-2 bg-white text-modern-coral px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg shadow-lg group-hover:shadow-2xl transition-shadow duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Schedule a Meeting
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    →
+                  </motion.span>
+                </motion.div>
+                
+                {/* Floating particles */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-2 h-2 bg-white/30 rounded-full"
+                      style={{
+                        left: `${10 + i * 12}%`,
+                        top: `${20 + (i % 3) * 20}%`,
+                      }}
+                      animate={{
+                        y: [-10, 10, -10],
+                        opacity: [0.3, 0.7, 0.3],
+                      }}
+                      transition={{
+                        duration: 2 + i * 0.3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </Link>
+        </motion.div>
+
         {/* Divider */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-8"
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent my-8"
         />
 
         {/* Bottom Section */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600"
+          transition={{ delay: 0.8 }}
+          className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600 dark:text-gray-300"
         >
           <p className="footer-copyright">
             © {currentYear} Awodi Ochiponu. Crafted with{" "}
@@ -251,9 +333,9 @@ function Footer({ onSectionChange }) {
           <div className="flex items-center gap-4">
             <motion.span
               whileHover={{ scale: 1.05 }}
-              className="text-xs bg-white/20 px-3 py-1 rounded-full"
+              className="text-xs bg-white/20 dark:bg-gray-700/50 px-3 py-1 rounded-full"
             >
-              v 2 . 1 . 0
+              v2.0.0
             </motion.span>
             <motion.a
               href="#"

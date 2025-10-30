@@ -52,30 +52,6 @@
     animation: gradient-shift 15s ease infinite;
   }
   
-  /* Alternative Options (comment/uncomment to try):
-  
-  Option 1: Coral Warmth
-  .dark .layout-container {
-    @apply bg-gradient-to-br from-gray-900 via-red-900/25 to-orange-800/25;
-  }
-  
-  Option 2: Teal Professional  
-  .dark .layout-container {
-    @apply bg-gradient-to-br from-gray-900 via-teal-900/30 to-cyan-900/30;
-  }
-  
-  Option 3: Balanced Coral-Teal
-  .dark .layout-container {
-    @apply bg-gradient-to-br from-gray-900 via-orange-900/30 to-teal-900/30;
-  }
-  
-  Option 4: Deep Ocean
-  .dark .layout-container {
-    @apply bg-gradient-to-br from-gray-900 via-blue-900/25 to-cyan-900/30;
-  }
-  
-  */
-  
   .layout-main {
     @apply flex-grow z-10;
   }

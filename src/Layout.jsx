@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Hero from "./Hero";
 import BrandBubbles from "./BrandBubbles";
+import FloatingActionButton from "./FloatingActionButton";
 import Footer from "./Footer";
 
 function Layout() {
@@ -16,6 +17,7 @@ function Layout() {
       <main className="layout-main">
         <Hero currentSection={currentSection} setCurrentSection={setCurrentSection} />
       </main>
+      <FloatingActionButton />
       <Footer onSectionChange={handleSectionChange} />
     </div>
   );
