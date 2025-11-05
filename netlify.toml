@@ -1,36 +1,12 @@
-# Netlify Configuration File
-
 [build]
-  # Build command
-  command = "npm run build"
-  
-  # Output directory
   publish = "dist"
-  
-  # Netlify Functions directory
-  functions = "backend/meetings/netlify/functions"
+  command = "npm run build"
+  functions = "netlify/functions"
 
-[build.environment]
-  # Node version
-  NODE_VERSION = "18"
+[build.bundling]
+  target = "es2020"  # Modern JS for functions
 
-# Production environment variables (set in Netlify UI)
-# RESEND_API_KEY = "your_resend_api_key"
-
-# Redirects for SPA routing
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
-
-# Function settings
-[functions]
-  # Function directory
-  directory = "backend/meetings/netlify/functions"
-  
-  # External node modules to include
-  node_bundler = "esbuild"
-  
-  # Timeout (in seconds) - default is 10s, max is 26s for free tier
-  [functions.timeout]
-    default = 10
