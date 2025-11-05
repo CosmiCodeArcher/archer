@@ -80,34 +80,35 @@ function MeetingScheduler() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // 1. Prepare data
     const payload = {
       name: formData.name,
       email: formData.email,
       notes: formData.notes,
-      date: selectedDate.toISOString().split("T")[0], // YYYY-MM-DD
+      date: selectedDate.toISOString().split("T")[0],
       time: selectedTime,
-      duration: parseInt(selectedMeetingType.duration),
+      duration: parseInt(selectedMeetingType.duration.split(" ")[0]), // ← FIXED
       type: selectedMeetingType.title,
     };
   
     try {
-      // 2. Send to Netlify Function
       const res = await fetch("/api/schedule-meeting", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
   
+      const data = await res.json(); // ← Add this to see error
+  
       if (res.ok) {
         setShowConfetti(true);
-        setStep(4); // ← Now it's **REAL success**
+        setStep(4);
       } else {
-        alert("Something went wrong. Please try again.");
+        console.error("Server error:", data);
+        alert(`Error: ${data.message || "Unknown error"}`);
       }
     } catch (err) {
-      console.error(err);
-      alert("Network error. Check your connection.");
+      console.error("Network error:", err);
+      alert("Network error. Check console.");
     }
   };
 
