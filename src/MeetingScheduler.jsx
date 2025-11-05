@@ -86,7 +86,7 @@ function MeetingScheduler() {
       notes: formData.notes,
       date: selectedDate.toISOString().split("T")[0],
       time: selectedTime,
-      duration: parseInt(selectedMeetingType.duration.split(" ")[0]), // ← FIXED
+      duration: parseInt(selectedMeetingType.duration.split(" ")[0]),
       type: selectedMeetingType.title,
     };
   
@@ -97,18 +97,22 @@ function MeetingScheduler() {
         body: JSON.stringify(payload),
       });
   
-      const data = await res.json(); // ← Add this to see error
-  
-      if (res.ok) {
-        setShowConfetti(true);
-        setStep(4);
-      } else {
-        console.error("Server error:", data);
-        alert(`Error: ${data.message || "Unknown error"}`);
+      // Safer: Check if response is OK first
+      if (!res.ok) {
+        const text = await res.text();  // Get raw text (handles HTML 404)
+        console.error("Server response:", text);
+        alert(`Error ${res.status}: ${text.substring(0, 100)}...`);
+        return;
       }
+  
+      const data = await res.json();
+      console.log("Success:", data);
+  
+      setShowConfetti(true);
+      setStep(4);
     } catch (err) {
       console.error("Network error:", err);
-      alert("Network error. Check console.");
+      alert("Failed to connect. Check console or try refreshing.");
     }
   };
 
