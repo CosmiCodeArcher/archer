@@ -91,7 +91,7 @@ function MeetingScheduler() {
     };
   
     try {
-      const res = await fetch("/api/schedule-meeting", {
+      const res = await fetch("/.netlify/functions/schedule-meeting", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
