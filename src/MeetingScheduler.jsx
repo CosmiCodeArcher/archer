@@ -77,10 +77,38 @@ function MeetingScheduler() {
     return date >= today && dayOfWeek !== 0 && dayOfWeek !== 6;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowConfetti(true);
-    setStep(4);
+  
+    // 1. Prepare data
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      notes: formData.notes,
+      date: selectedDate.toISOString().split("T")[0], // YYYY-MM-DD
+      time: selectedTime,
+      duration: parseInt(selectedMeetingType.duration),
+      type: selectedMeetingType.title,
+    };
+  
+    try {
+      // 2. Send to Netlify Function
+      const res = await fetch("/api/schedule-meeting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      if (res.ok) {
+        setShowConfetti(true);
+        setStep(4); // ← Now it's **REAL success**
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Check your connection.");
+    }
   };
 
   const monthNames = [

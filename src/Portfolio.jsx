@@ -322,19 +322,6 @@ function Portfolio() {
         ))}
       </div>
 
-      {/* Empty State for Web3 */}
-      {filter === "Web3" && filteredProjects.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-12 md:py-20"
-        >
-          <div className="text-5xl md:text-6xl mb-4">🚀</div>
-          <h3 className="text-xl md:text-2xl font-bold mb-2 text-modern-coral">Coming Soon!</h3>
-          <p className="text-sm md:text-base text-gray-600 dark:text-gray-100">Web3 projects are in development. Stay tuned!</p>
-        </motion.div>
-      )}
-
       {/* Projects Display */}
       {filteredProjects.length > 0 && (
         <>
