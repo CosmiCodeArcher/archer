@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lambda": "netlify-lambda build netlify/functions",
     "lint": "eslint .",
     "preview": "vite preview"
   },
