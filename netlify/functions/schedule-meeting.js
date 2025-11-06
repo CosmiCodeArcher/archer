@@ -56,7 +56,7 @@ export const handler = async (event) => {
     console.log('Your email (to): ', 'gackmar@gmail.com');
     // Client email
     await resend.emails.send({
-      from: 'Awodi <no-reply@resend.dev>',
+      from: 'Awodi <onboarding@resend.dev>',
       to: email,
       subject: 'Meeting Confirmed!',
       html: `
@@ -68,13 +68,13 @@ export const handler = async (event) => {
     });
 
     console.log('Attempting to send client email with:');
-    console.log('  From:', 'Awodi <no-reply@resend.dev>');
+    console.log('  From:', 'Awodi <onboarding@resend.dev>');
     console.log('  To:', email);
     console.log('  Subject:', 'Meeting Confirmed!');
 
     // Your email
     await resend.emails.send({
-      from: 'New Booking <no-reply@resend.dev>',
+      from: 'New Booking <onboarding@resend.dev>',
       to: 'gackmar@gmail.com',
       subject: `New Meeting: ${name}`,
       html: `
@@ -86,7 +86,7 @@ export const handler = async (event) => {
     });
 
     console.log('Attempting to send your email with:');
-    console.log('  From:', 'New Booking <no-reply@resend.dev>');
+    console.log('  From:', 'New Booking <onboarding@resend.dev>');
     console.log('  To:', 'gackmar@gmail.com');
     console.log('  Subject:', `New Meeting: ${name}`);
 
