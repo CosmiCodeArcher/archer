@@ -67,6 +67,11 @@ export const handler = async (event) => {
       `,
     });
 
+    console.log('Attempting to send client email with:');
+    console.log('  From:', 'Awodi <no-reply@resend.dev>');
+    console.log('  To:', email);
+    console.log('  Subject:', 'Meeting Confirmed!');
+
     // Your email
     await resend.emails.send({
       from: 'New Booking <no-reply@resend.dev>',
@@ -80,8 +85,14 @@ export const handler = async (event) => {
       `,
     });
 
+    console.log('Attempting to send your email with:');
+    console.log('  From:', 'New Booking <no-reply@resend.dev>');
+    console.log('  To:', 'gackmar@gmail.com');
+    console.log('  Subject:', `New Meeting: ${name}`);
+
     return { statusCode: 200, body: JSON.stringify(data) };
   } catch (err) {
+    console.error('Error sending emails:', err);
     return { statusCode: 500, body: err.message };
   }
 };
