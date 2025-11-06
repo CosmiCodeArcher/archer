@@ -60,10 +60,7 @@ export const handler = async (event) => {
       to: email,
       subject: 'Meeting Confirmed!',
       html: `
-        <h2>Meeting Scheduled!</h2>
-        <p>Hi <strong>${name}</strong>,</p>
-        <p><strong>${type}</strong> on <strong>${formattedDate}</strong> (${duration} min)</p>
-        <p><em>Meeting link will be sent 15 minutes before.</em></p>
+        <p>Your meeting is confirmed.</p>
       `,
     });
 
