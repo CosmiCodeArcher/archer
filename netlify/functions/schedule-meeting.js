@@ -57,7 +57,7 @@ export const handler = async (event) => {
     // Client email
     await resend.emails.send({
       from: 'Awodi <onboarding@resend.dev>',
-      to: email,
+      to: 'gackmar@gmail.com',
       subject: 'Meeting Confirmed!',
       html: `
         <p>Your meeting is confirmed.</p>
@@ -66,7 +66,7 @@ export const handler = async (event) => {
 
     console.log('Attempting to send client email with:');
     console.log('  From:', 'Awodi <onboarding@resend.dev>');
-    console.log('  To:', email);
+    console.log('  To:', 'gackmar@gmail.com');
     console.log('  Subject:', 'Meeting Confirmed!');
 
     // Your email
