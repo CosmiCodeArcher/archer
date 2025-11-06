@@ -57,7 +57,7 @@ export const handler = async (event) => {
     // Client email
     await resend.emails.send({
       from: 'Awodi <onboarding@resend.dev>',
-      to: 'gackmar@gmail.com',
+      to: 'hamzamusaochiponu@gmail.com',
       subject: 'Meeting Confirmed!',
       html: `
         <p>Your meeting is confirmed.</p>
