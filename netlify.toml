@@ -1,7 +1,7 @@
 [build]
   publish = "dist"
-  command = "npm run build"
-  functions = "backend/functions"
+  command = "cp -r backend/functions/* netlify/functions/ && pip install -r netlify/functions/requirements.txt --target=netlify/functions/deps && npm run build"
+  functions = "netlify/functions"
 
 [build.environment]
   PYTHON_VERSION = "3.9"
