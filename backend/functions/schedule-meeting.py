@@ -1,4 +1,3 @@
-# backend/functions/schedule-meeting.py
 import json
 import smtplib
 from email.mime.text import MIMEText
