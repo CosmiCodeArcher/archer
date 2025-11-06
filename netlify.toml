@@ -1,10 +1,10 @@
 [build]
   publish = "dist"
-  command = "npm run build"
-  functions = "netlify/functions"
+  command = "pip install -r backend/functions/requirements.txt --target=./.netlify/functions/deps && npm run build"
+  functions = "backend/functions"
 
-[build.bundling]
-  target = "es2020"  # Modern JS for functions
+[build.environment]
+  PYTHON_VERSION = "3.9"
 
 [[redirects]]
   from = "/api/*"
