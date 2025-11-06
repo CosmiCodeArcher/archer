@@ -50,6 +50,10 @@ export const handler = async (event) => {
   const formattedDate = new Date(`${date}T${time}`).toLocaleString();
 
   try {
+    console.log('Attempting to send emails...');
+    console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
+    console.log('Client email (to): ', email);
+    console.log('Your email (to): ', 'gackmar@gmail.com');
     // Client email
     await resend.emails.send({
       from: 'Awodi <no-reply@resend.dev>',
