@@ -26,7 +26,7 @@ export const handler = async () => {
 
     if (diff < 60 * 1000) {  // Within 1 min
       await resend.emails.send({
-        from: 'Reminder <onboarding@resend.dev>',
+        from: 'Reminder <hello@resend.dev>',
         to: [m.email, 'gackmar@gmail.com'],
         subject: 'Meeting in 15 Minutes!',
         html: `
