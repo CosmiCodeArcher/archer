@@ -1,6 +1,6 @@
 [build]
   publish = "dist"
-  command = "cp -r backend/functions/* netlify/functions/ && pip install -r netlify/functions/requirements.txt --target=netlify/functions/deps && npm run build"
+  command = "mkdir -p netlify/functions/ && cp -r backend/functions/* netlify/functions/ && pip install -r netlify/functions/requirements.txt --target=netlify/functions/deps && npm run build"
   functions = "netlify/functions"
 
 [build.environment]
