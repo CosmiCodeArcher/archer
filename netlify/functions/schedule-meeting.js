@@ -66,7 +66,7 @@ export const handler = async (event) => {
     // Your email
     await resend.emails.send({
       from: 'New Booking <no-reply@resend.dev>',
-      to: 'YOUR_EMAIL@gmail.com',
+      to: 'gackmar@gmail.com',
       subject: `New Meeting: ${name}`,
       html: `
         <h3>New Meeting!</h3>
