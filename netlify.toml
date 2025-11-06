@@ -1,7 +1,7 @@
 [build]
   publish = "dist"
-  command = "npm run build && npm run build:lambda"
-  functions = "netlify/functions/dist"
+  command = "npm run build"
+  functions = "netlify/functions"
 
 [build.bundling]
   target = "es2020"  # Modern JS for functions
