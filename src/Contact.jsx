@@ -29,7 +29,7 @@ function Contact() {
     {
       name: "GitHub",
       icon: "🐙",
-      value: "github.com/Ochiponu-Awodi",
+      value: "github.com/CosmiCodeArcher",
       link: "https://github.com/CosmiCodeArcher",
       color: "from-gray-600 to-gray-800",
       description: "Check out my code"
