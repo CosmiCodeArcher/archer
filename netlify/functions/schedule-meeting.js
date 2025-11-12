@@ -40,14 +40,23 @@ exports.handler = async (event) => {
     // Generate Meet link
     const meetLink = `https://meet.google.com/${Math.random().toString(36).substr(2, 9)}`;
 
-    // Clean time for DB
-    const dbTime = time.replace(' AM', ':00').replace(' PM', ':00').split(' ')[0];
+    let parsedTime = time.trim();
+    const [hourStr, minuteStr] = parsedTime.split(':');
+    let hour = parseInt(hourStr, 10);
+    const isPm = parsedTime.toLowerCase().includes('pm');
+
+    if (isPm && hour < 12) {
+        hour += 12;
+    } else if (!isPm && hour === 12) {
+        hour = 0; // 12 AM is 00 in 24-hour format
+    }
+    parsedTime = `${String(hour).padStart(2, '0')}:${minuteStr.split(' ')[0]}:00`;
 
     // Save to Supabase
     const { data, error: supabaseError } = await supabase
         .from('meetings')
         .insert({
-            name, email, date, time: dbTime,
+            name, email, date, time: parsedTime,
             duration, type, notes, meet_link: meetLink,
         })
         .select()
@@ -59,7 +68,7 @@ exports.handler = async (event) => {
     }
 
     // Format date for email
-    const dateObj = new Date(`${date}T${time}`);
+    const dateObj = new Date(`${date}T${parsedTime}`);
     const formattedDate = dateObj.toLocaleString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
         hour: 'numeric', minute: 'numeric', hour12: true,
