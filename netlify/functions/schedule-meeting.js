@@ -68,10 +68,24 @@ exports.handler = async (event) => {
     }
 
     // Format date for email
-    const dateObj = new Date(`${date}T${parsedTime}`);
+    // Construct date using individual components to avoid timezone issues with string parsing
+    // Assuming date is 'YYYY-MM-DD' and parsedTime is 'HH:MM:SS'
+    const [year, month, day] = date.split('-').map(Number);
+    const [parsedHour, minute, second] = parsedTime.split(':').map(Number);
+    const dateObj = new Date(year, month - 1, day, parsedHour, minute, second); // Month is 0-indexed
+    
     const formattedDate = dateObj.toLocaleString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: 'numeric', minute: 'numeric', hour12: true,
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        // Explicitly set timezone to prevent server timezone interference.
+        // Using 'UTC' or client's timezone if known is often best.
+        // For simple dates, local conversion is often desired.
+        // Let's remove timeZone for now and rely on client's input parsed directly.
     });
 
     try {
