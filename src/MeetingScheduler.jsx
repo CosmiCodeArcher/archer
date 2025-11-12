@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tilt } from "react-tilt";
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function MeetingScheduler() {
   const [step, setStep] = useState(1);
@@ -11,12 +17,26 @@ function MeetingScheduler() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showConfetti, setShowConfetti] = useState(false);
   const [userTimezone, setUserTimezone] = useState("");
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   useEffect(() => {
     // Detect user timezone
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setUserTimezone(timezone);
-  }, []);
+
+    const fetchBookedSlots = async () => {
+      const { data, error } = await supabase
+        .from('meetings')
+        .select('date, time');
+      if (error) {
+        console.error('Error fetching booked slots:', error);
+      } else {
+        setBookedSlots(data);
+      }
+    };
+    fetchBookedSlots();
+
+  }, [currentMonth]); // Re-fetch when month changes
 
   const meetingTypes = [
     {
@@ -46,9 +66,7 @@ function MeetingScheduler() {
   ];
 
   const timeSlots = [
-    "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
-    "11:00 AM", "11:30 AM", "02:00 PM", "02:30 PM",
-    "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM",
+    "10:00 AM", "02:00 PM",
   ];
 
   const getDaysInMonth = (date) => {
@@ -69,12 +87,40 @@ function MeetingScheduler() {
     return days;
   };
 
-  const isDateAvailable = (date) => {
+  const isDateAvailable = (date, time = null) => {
     if (!date) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dayOfWeek = date.getDay();
-    return date >= today && dayOfWeek !== 0 && dayOfWeek !== 6;
+
+    // Disable past days and weekends
+    if (date < today || dayOfWeek === 0 || dayOfWeek === 6) {
+      return false;
+    }
+
+    // If it's today, check if the time slot has passed
+    if (date.toDateString() === today.toDateString() && time) {
+      const [hourStr, minuteStr, ampm] = time.split(/[:\s]/);
+      let hours = parseInt(hourStr, 10);
+      if (ampm === "PM" && hours < 12) hours += 12;
+      if (ampm === "AM" && hours === 12) hours = 0; // 12 AM is 00 in 24-hour format
+
+      const slotDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, parseInt(minuteStr, 10));
+      return slotDateTime > now;
+    }
+
+    return true;
+  };
+
+  const isTimeSlotBooked = (date, time) => {
+    const checkDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
+    const [hourStr, minuteStr, ampm] = time.split(/[:\s]/);
+    let hours = parseInt(hourStr, 10);
+    if (ampm === "PM" && hours < 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0; // 12 AM is 00 in 24-hour format
+    const checkTime = `${String(hours).padStart(2, '0')}:${minuteStr}:00`;
+
+    return bookedSlots.some(slot => slot.date === checkDate && slot.time === checkTime);
   };
 
   const handleSubmit = async (e) => {
@@ -325,24 +371,32 @@ function MeetingScheduler() {
                 >
                   <h4 className="text-lg font-bold mb-4 dark:text-white">Available Times</h4>
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                    {timeSlots.map((time) => (
-                      <motion.button
-                        key={time}
-                        onClick={() => {
-                          setSelectedTime(time);
-                          setStep(3);
-                        }}
-                        className={`p-3 rounded-lg font-medium transition-all duration-300 ${
-                          selectedTime === time
-                            ? "bg-gradient-to-br from-modern-coral to-modern-teal text-white"
-                            : "bg-white/50 dark:bg-gray-700/50 hover:bg-modern-teal/20 dark:hover:bg-modern-teal/30 text-gray-800 dark:text-white"
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {time}
-                      </motion.button>
-                    ))}
+                    {timeSlots.map((time) => {
+                      const isBooked = selectedDate && isTimeSlotBooked(selectedDate, time);
+                      const isPastTime = selectedDate && !isDateAvailable(selectedDate, time);
+                      const isDisabled = isBooked || isPastTime;
+                      return (
+                        <motion.button
+                          key={time}
+                          onClick={() => {
+                            setSelectedTime(time);
+                            setStep(3);
+                          }}
+                          disabled={isDisabled}
+                          className={`p-3 rounded-lg font-medium transition-all duration-300 ${
+                            isDisabled
+                              ? "bg-gray-200 dark:bg-gray-900 text-gray-400 cursor-not-allowed"
+                              : selectedTime === time
+                              ? "bg-gradient-to-br from-modern-coral to-modern-teal text-white"
+                              : "bg-white/50 dark:bg-gray-700/50 hover:bg-modern-teal/20 dark:hover:bg-modern-teal/30 text-gray-800 dark:text-white"
+                          }`}
+                          whileHover={isDisabled ? {} : { scale: 1.05 }}
+                          whileTap={isDisabled ? {} : { scale: 0.95 }}
+                        >
+                          {time}
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 </motion.div>
               )}
