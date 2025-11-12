@@ -31,32 +31,20 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Invalid JSON' };
     }
 
-    const { name, email, date, time, duration, type, notes } = body;
+    const { name, email, dateTime, duration, type, notes } = body;
 
-    if (!name || !email || !date || !time || !duration || !type) {
+    if (!name || !email || !dateTime || !duration || !type) {
         return { statusCode: 400, body: 'Missing fields' };
     }
 
     // Generate Meet link
     const meetLink = `https://meet.google.com/${Math.random().toString(36).substr(2, 9)}`;
 
-    let parsedTime = time.trim();
-    const [hourStr, minuteStr] = parsedTime.split(':');
-    let hour = parseInt(hourStr, 10);
-    const isPm = parsedTime.toLowerCase().includes('pm');
-
-    if (isPm && hour < 12) {
-        hour += 12;
-    } else if (!isPm && hour === 12) {
-        hour = 0; // 12 AM is 00 in 24-hour format
-    }
-    parsedTime = `${String(hour).padStart(2, '0')}:${minuteStr.split(' ')[0]}:00`;
-
     // Save to Supabase
     const { data, error: supabaseError } = await supabase
         .from('meetings')
         .insert({
-            name, email, date, time: parsedTime,
+            name, email, date: new Date(dateTime).toISOString().split('T')[0], time: new Date(dateTime).toTimeString().split(' ')[0],
             duration, type, notes, meet_link: meetLink,
         })
         .select()
@@ -70,7 +58,7 @@ exports.handler = async (event) => {
     // Format date for email
     // Construct date using individual components to avoid timezone issues with string parsing
     // Assuming date is 'YYYY-MM-DD' and parsedTime is 'HH:MM:SS'
-    const dateIsoString = `${date}T${parsedTime}Z`; // Force UTC interpretation
+    const dateIsoString = dateTime; // Use the full ISO string directly from frontend
     const dateObj = new Date(dateIsoString);
     
     const formattedDate = dateObj.toLocaleString('en-US', {

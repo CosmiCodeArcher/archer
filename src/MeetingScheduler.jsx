@@ -80,12 +80,25 @@ function MeetingScheduler() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    // Combine date and time, and append user's timezone offset
+    const [hourStr, minuteStr] = selectedTime.split(/[:\s]/);
+    let hours = parseInt(hourStr, 10);
+    const isPm = selectedTime.toLowerCase().includes("pm");
+
+    if (isPm && hours < 12) {
+      hours += 12;
+    } else if (!isPm && hours === 12) {
+      hours = 0; // 12 AM is 00 in 24-hour format
+    }
+
+    const localDateTime = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(),
+                                   hours, parseInt(minuteStr, 10), 0);
+    
     const payload = {
       name: formData.name,
       email: formData.email,
       notes: formData.notes,
-      date: selectedDate.toISOString().split("T")[0],
-      time: selectedTime,
+      dateTime: localDateTime.toISOString(), // Send full ISO string with local timezone
       duration: parseInt(selectedMeetingType.duration.split(" ")[0]),
       type: selectedMeetingType.title,
     };
