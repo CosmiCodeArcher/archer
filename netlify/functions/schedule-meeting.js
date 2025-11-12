@@ -70,9 +70,8 @@ exports.handler = async (event) => {
     // Format date for email
     // Construct date using individual components to avoid timezone issues with string parsing
     // Assuming date is 'YYYY-MM-DD' and parsedTime is 'HH:MM:SS'
-    const [year, month, day] = date.split('-').map(Number);
-    const [parsedHour, minute, second] = parsedTime.split(':').map(Number);
-    const dateObj = new Date(year, month - 1, day, parsedHour, minute, second); // Month is 0-indexed
+    const dateIsoString = `${date}T${parsedTime}Z`; // Force UTC interpretation
+    const dateObj = new Date(dateIsoString);
     
     const formattedDate = dateObj.toLocaleString('en-US', {
         weekday: 'long',
