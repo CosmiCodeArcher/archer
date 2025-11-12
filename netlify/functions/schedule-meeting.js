@@ -84,7 +84,7 @@ exports.handler = async (event) => {
         <p>Thanks for booking a <strong>${type}</strong>!</p>
         <p><strong>Date & Time:</strong> ${formattedDate} (${duration} min)</p>
         <p><em>Meeting link will be sent 15 minutes before.</em></p>
-        <hr><p style="font-size:12px;color:#666;">Awodi Portfolio</p>
+        <p style="font-size:12px;color:#666;margin-top:20px;">Awodi Portfolio</p>
         </body></html>
         `;
         await transporter.sendMail({
