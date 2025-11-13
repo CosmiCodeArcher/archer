@@ -127,7 +127,12 @@ exports.handler = async (event) => {
                             
                             <div style="display: table; width: 100%; margin-bottom: 16px;">
                                 <div style="display: table-cell; vertical-align: middle; width: 40px;">
-                                    <span style="font-size: 24px;">📆</span>
+                                    <img 
+                                        src="https://awodi.netlify.app/weekend.png" 
+                                        alt="Calendar Icon" 
+                                        className="w-6 h-6 md:w-8 md:h-8 object-contain" 
+                                        style={{ display: 'inline-block' }}
+                                    />
                                 </div>
                                 <div style="display: table-cell; vertical-align: middle;">
                                     <div style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Date & Time</div>
