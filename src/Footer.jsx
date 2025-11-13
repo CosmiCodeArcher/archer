@@ -267,6 +267,12 @@ function Footer({ onSectionChange }) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
+                  <img 
+                    src="https://awodi.netlify.app/weekend.png" 
+                    alt="Calendar Icon" 
+                    className="w-6 h-6 object-contain"
+                    style={{ display: 'inline-block' }}
+                  />
                   Schedule a Meeting
                   <motion.span
                     animate={{ x: [0, 5, 0] }}

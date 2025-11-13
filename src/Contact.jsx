@@ -161,7 +161,12 @@ function Contact() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="text-4xl md:text-5xl"
               >
-                📅
+                <img 
+                  src="https://awodi.netlify.app/weekend.png" 
+                  alt="Calendar Icon" 
+                  className="w-8 h-8 md:w-10 md:h-10 object-contain" 
+                  style={{ display: 'inline-block' }}
+                />
               </motion.div>
               <div className="flex-1">
                 <h3 className="text-base md:text-lg font-bold text-gray-800 dark:text-white mb-1 group-hover:text-modern-coral transition-colors duration-300">

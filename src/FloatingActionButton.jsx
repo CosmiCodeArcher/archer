@@ -45,7 +45,12 @@ function FloatingActionButton() {
             animate={isHovered ? { rotate: [0, -10, 10, 0] } : {}}
             transition={{ duration: 0.5 }}
           >
-            📅
+            <img 
+              src="https://awodi.netlify.app/weekend.png" 
+              alt="Calendar Icon" 
+              className="w-6 h-6 md:w-8 md:h-8 object-contain" 
+              style={{ display: 'inline-block' }}
+            />
           </motion.span>
 
           {/* Sparkles on hover */}
