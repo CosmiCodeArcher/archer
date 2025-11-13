@@ -254,7 +254,12 @@ function Footer({ onSectionChange }) {
                   transition={{ duration: 3, repeat: Infinity }}
                   className="text-5xl md:text-6xl mb-4"
                 >
-                  🗓️
+                  <img 
+                    src="https://awodi.netlify.app/weekend.png" 
+                    alt="Calendar Icon" 
+                    className="w-6 h-6 object-contain"
+                    style={{ display: 'inline-block' }}
+                  />
                 </motion.div>
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
                   Ready to discuss your project?
@@ -267,12 +272,6 @@ function Footer({ onSectionChange }) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <img 
-                    src="https://awodi.netlify.app/weekend.png" 
-                    alt="Calendar Icon" 
-                    className="w-6 h-6 object-contain"
-                    style={{ display: 'inline-block' }}
-                  />
                   Schedule a Meeting
                   <motion.span
                     animate={{ x: [0, 5, 0] }}
