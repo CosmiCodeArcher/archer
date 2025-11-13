@@ -257,7 +257,7 @@ function Footer({ onSectionChange }) {
                   <img 
                     src="https://awodi.netlify.app/weekend.png" 
                     alt="Calendar Icon" 
-                    className="w-6 h-6 object-contain"
+                    className="w-10 h-10 md:w-12 md:h-12 object-contain"
                     style={{ display: 'inline-block' }}
                   />
                 </motion.div>
