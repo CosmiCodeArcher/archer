@@ -160,7 +160,13 @@ function MeetingScheduler() {
       if (!res.ok) {
         const text = await res.text();  // Get raw text (handles HTML 404)
         console.error("Server response:", text);
-        alert(`Error ${res.status}: ${text.substring(0, 100)}...`);
+        // Check for specific 409 conflict status
+        if (res.status === 409) {
+          const errorData = JSON.parse(text);
+          alert(errorData.error); // Display the specific error message from the backend
+        } else {
+          alert(`Error ${res.status}: ${text.substring(0, 100)}...`);
+        }
         return;
       }
   
@@ -169,6 +175,8 @@ function MeetingScheduler() {
   
       setShowConfetti(true);
       setStep(4);
+      // Add the newly booked slot to the bookedSlots state
+      setBookedSlots(prev => [...prev, { date: data.date, time: data.time }]);
     } catch (err) {
       console.error("Network error:", err);
       alert("Failed to connect. Check console or try refreshing.");
@@ -197,7 +205,12 @@ function MeetingScheduler() {
             transition={{ duration: 2, repeat: Infinity }}
             className="text-6xl md:text-8xl mb-4"
           >
-            📅
+            <img 
+              src="https://awodi.netlify.app/weekend.png" 
+              alt="Calendar Icon" 
+              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+              style={{ display: 'inline-block' }}
+            />
           </motion.div>
           <h1 className="cool-text text-3xl md:text-5xl font-bold mb-4" data-text="Schedule a Meeting">
             Schedule a Meeting

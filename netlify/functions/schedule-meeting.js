@@ -45,6 +45,22 @@ exports.handler = async (event) => {
     const date = dateObj.toISOString().split('T')[0];
     const time = dateObj.toTimeString().split(' ')[0];
 
+    // Check for duplicate booking
+    const { data: existingMeetings, error: checkError } = await supabase
+        .from('meetings')
+        .select('id')
+        .eq('date', date)
+        .eq('time', time);
+
+    if (checkError) {
+        console.error('Supabase check error:', checkError);
+        return { statusCode: 500, body: JSON.stringify({ error: checkError.message }) };
+    }
+
+    if (existingMeetings && existingMeetings.length > 0) {
+        return { statusCode: 409, body: JSON.stringify({ error: 'This slot is already booked. Please choose another time.' }) };
+    }
+
     // Save to Supabase
     const { data, error: supabaseError } = await supabase
         .from('meetings')
