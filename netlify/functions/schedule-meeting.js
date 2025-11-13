@@ -89,7 +89,7 @@ exports.handler = async (event) => {
                     
                     <!-- Header with Gradient -->
                     <div style="background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); padding: 40px 30px; text-align: center; position: relative;">
-                        <div style="font-size: 64px; margin-bottom: 16px; animation: bounce 2s infinite;">📅</div>
+                        <img src="https://www.flaticon.com/free-icon/weekend_17820615" alt="Calendar" style="width: 64px; height: auto; margin-bottom: 16px; display: inline-block;">
                         <h1 style="margin: 0; color: white; font-size: 32px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Meeting Confirmed!</h1>
                         <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.95); font-size: 16px;">Your time has been reserved</p>
                     </div>
@@ -214,7 +214,7 @@ exports.handler = async (event) => {
                     
                     <!-- Header -->
                     <div style="background: linear-gradient(135deg, #00CED1 0%, #FF7F50 100%); padding: 40px 30px; text-align: center;">
-                        <div style="font-size: 64px; margin-bottom: 16px;">🔔</div>
+                        <img src="https://www.flaticon.com/free-icon/bell_4213459" alt="Bell" style="width: 64px; height: auto; margin-bottom: 16px; display: inline-block;">
                         <h1 style="margin: 0; color: white; font-size: 32px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">New Meeting Alert!</h1>
                         <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.95); font-size: 16px;">You have a new meeting scheduled</p>
                     </div>
