@@ -19,13 +19,14 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.handler = async (event) => {
-    const now = new Date();
+    const now = new Date(new Date().toUTCString()); // Get current time as UTC Date object
     const fiveMinFromNow = new Date(now.getTime() + 5 * 60 * 1000);
     const thirtyMinFromNow = new Date(now.getTime() + 30 * 60 * 1000);
 
-    const todayIsoDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-    const fiveMinIsoTime = fiveMinFromNow.toTimeString().split(' ')[0].slice(0, 8); // HH:MM:SS
-    const thirtyMinIsoTime = thirtyMinFromNow.toTimeString().split(' ')[0].slice(0, 8); // HH:MM:SS
+    // Convert to ISO strings for comparison with Supabase (assuming Supabase stores UTC)
+    const todayIsoDate = now.toISOString().split('T')[0]; // YYYY-MM-DD (UTC)
+    const fiveMinIsoTime = fiveMinFromNow.toISOString().split('T')[1].slice(0, 8); // HH:MM:SS (UTC)
+    const thirtyMinIsoTime = thirtyMinFromNow.toISOString().split('T')[1].slice(0, 8); // HH:MM:SS (UTC)
 
     const { data: meetings, error: supabaseError } = await supabase
         .from('meetings')
@@ -47,7 +48,7 @@ exports.handler = async (event) => {
     for (const m of meetings) {
         try {
             const meetingDateTimeStr = `${m.date}T${m.time}`;
-            const meetingDateTime = new Date(meetingDateTimeStr);
+            const meetingDateTime = new Date(`${meetingDateTimeStr}Z`); // Force UTC interpretation
 
             const timeUntilMeetingMs = meetingDateTime.getTime() - now.getTime();
             const timeUntilMeetingMinutes = timeUntilMeetingMs / (60 * 1000);
@@ -57,6 +58,7 @@ exports.handler = async (event) => {
                 const formattedDate = meetingDateTime.toLocaleString('en-US', {
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
                     hour: 'numeric', minute: 'numeric', hour12: true,
+                    timeZone: 'UTC',
                 });
 
                 const reminderHtml = `

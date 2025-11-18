@@ -41,16 +41,15 @@ exports.handler = async (event) => {
     const meetLink = `https://meet.google.com/${Math.random().toString(36).substr(2, 9)}`;
 
     // Parse dateTime
-    const dateObj = new Date(dateTime);
-    const date = dateObj.toISOString().split('T')[0];
-    const time = dateObj.toTimeString().split(' ')[0];
+    const date = dateTime.split('T')[0];
+    const parsedTime = dateTime.split('T')[1].split('.')[0]; // Extract time and remove milliseconds
 
     // Check for duplicate booking
     const { data: existingMeetings, error: checkError } = await supabase
         .from('meetings')
         .select('id')
         .eq('date', date)
-        .eq('time', time);
+        .eq('time', parsedTime);
 
     if (checkError) {
         console.error('Supabase check error:', checkError);
@@ -65,7 +64,7 @@ exports.handler = async (event) => {
     const { data, error: supabaseError } = await supabase
         .from('meetings')
         .insert({
-            name, email, date, time,
+            name, email, date, time: parsedTime,
             duration, type, notes, meet_link: meetLink,
         })
         .select()
@@ -76,7 +75,12 @@ exports.handler = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ error: supabaseError.message }) };
     }
 
-    // Format date for display
+    // Format date for email
+    // Construct date using individual components to avoid timezone issues with string parsing
+    // Assuming date is 'YYYY-MM-DD' and parsedTime is 'HH:MM:SS'
+    const dateIsoString = `${date}T${parsedTime}Z`; // Combine and force UTC interpretation
+    const dateObj = new Date(dateIsoString);
+    
     const formattedDate = dateObj.toLocaleString('en-US', {
         weekday: 'long',
         year: 'numeric',
@@ -85,6 +89,7 @@ exports.handler = async (event) => {
         hour: 'numeric',
         minute: 'numeric',
         hour12: true,
+        timeZone: 'UTC',
     });
 
     try {
