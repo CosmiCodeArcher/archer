@@ -40,9 +40,19 @@ exports.handler = async (event) => {
     // Generate Meet link
     const meetLink = `https://meet.google.com/${Math.random().toString(36).substr(2, 9)}`;
 
-    // Parse dateTime
-    const date = dateTime.split('T')[0];
-    const parsedTime = dateTime.split('T')[1].split('.')[0]; // Extract time and remove milliseconds
+    // FIX #1: Parse the ISO string correctly to preserve user's local time
+    const dateObj = new Date(dateTime);
+    
+    // Extract local date and time without timezone conversion
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = '00';
+
+    const date = `${year}-${month}-${day}`;
+    const parsedTime = `${hours}:${minutes}:${seconds}`;
 
     // Check for duplicate booking
     const { data: existingMeetings, error: checkError } = await supabase
@@ -75,12 +85,7 @@ exports.handler = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ error: supabaseError.message }) };
     }
 
-    // Format date for email
-    // Construct date using individual components to avoid timezone issues with string parsing
-    // Assuming date is 'YYYY-MM-DD' and parsedTime is 'HH:MM:SS'
-    const dateIsoString = `${date}T${parsedTime}Z`; // Combine and force UTC interpretation
-    const dateObj = new Date(dateIsoString);
-    
+    // FIX #2: Format date for display in email (user's local time)
     const formattedDate = dateObj.toLocaleString('en-US', {
         weekday: 'long',
         year: 'numeric',
@@ -89,13 +94,28 @@ exports.handler = async (event) => {
         hour: 'numeric',
         minute: 'numeric',
         hour12: true,
-        timeZone: 'UTC',
     });
 
-    // Generate Google Calendar link
-    const startDateTime = dateObj.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Ensure ISO format with Z for Google Calendar
-    const endDateTime = new Date(dateObj.getTime() + duration * 60 * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
-    const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(type + ' with ' + name)}&dates=${startDateTime.replace(/[-:]/g, '').substring(0, 15)}/${endDateTime.replace(/[-:]/g, '').substring(0, 15)}&details=${encodeURIComponent('Meeting Details:\nLink: ' + meetLink + '\nNotes: ' + (notes || 'None'))}&location=${encodeURIComponent(meetLink)}&sf=true&output=xml`;
+    // FIX #3: Generate Google Calendar links with correct timezone handling
+    // For Google Calendar, we use the local datetime as-is (no Z suffix)
+    const startDateTime = new Date(dateObj.getTime());
+    const endDateTime = new Date(dateObj.getTime() + duration * 60 * 1000);
+
+    // Format as YYYYMMDDTHHMMSS (without Z - local time)
+    const formatGCalTime = (d) => {
+        const y = d.getFullYear();
+        const mo = String(d.getMonth() + 1).padStart(2, '0');
+        const da = String(d.getDate()).padStart(2, '0');
+        const h = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        const s = String(d.getSeconds()).padStart(2, '0');
+        return `${y}${mo}${da}T${h}${mi}${s}`;
+    };
+
+    const startGCalTime = formatGCalTime(startDateTime);
+    const endGCalTime = formatGCalTime(endDateTime);
+
+    const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(type + ' with ' + name)}&dates=${startGCalTime}/${endGCalTime}&details=${encodeURIComponent('Meeting Details:\nLink: ' + meetLink + '\nNotes: ' + (notes || 'None'))}&location=${encodeURIComponent(meetLink)}&sf=true&output=xml`;
 
     try {
         // Client email
@@ -140,8 +160,7 @@ exports.handler = async (event) => {
                                     <img 
                                         src="https://awodi.netlify.app/weekend.png" 
                                         alt="Calendar Icon" 
-                                        className="w-1 h-1 md:w-1 md:h-1 object-contain" 
-                                        style={{ display: 'inline-block' }}
+                                        style="width: 24px; height: 24px; display: inline-block;" 
                                     />
                                 </div>
                                 <div style="display: table-cell; vertical-align: middle;">
@@ -180,10 +199,10 @@ exports.handler = async (event) => {
                             </p>
                         </div>
 
-                        <!-- Call to Action -->
+                        <!-- Call to Action - FIX #4: Make button functional Google Calendar link -->
                         <div style="text-align: center; margin: 32px 0;">
-                            <a href="${meetLink}" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(255,127,80,0.3); transition: all 0.3s;">
-                                Add to Calendar
+                            <a href="${googleCalendarLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(255,127,80,0.3); transition: all 0.3s;">
+                                📅 Add to Google Calendar
                             </a>
                         </div>
 
@@ -229,7 +248,7 @@ exports.handler = async (event) => {
             html: clientHtml,
         });
 
-        // Your notification email (admin version)
+        // Your notification email (admin version) - FIX #5: Add "Add to Calendar" button for admin too
         const notificationHtml = `
         <!DOCTYPE html>
         <html lang="en">
@@ -280,15 +299,7 @@ exports.handler = async (event) => {
                             <h2 style="margin: 0 0 20px 0; color: #FF7F50; font-size: 20px; font-weight: 700;">Meeting Details</h2>
                             
                             <div style="margin-bottom: 12px;">
-                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                 <img 
-                                        src="https://awodi.netlify.app/weekend.png" 
-                                        alt="Calendar Icon" 
-                                        className="w-1 h-1 md:w-1 md:h-1 object-contain" 
-                                        style={{ display: 'inline-block' }}
-                                    />
-                                 When
-                                 </span>
+                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📅 When</span>
                                 <div style="color: #333; font-size: 16px; font-weight: 600; margin-top: 4px;">${formattedDate}</div>
                             </div>
                             
@@ -297,10 +308,10 @@ exports.handler = async (event) => {
                                 <div style="color: #333; font-size: 16px; font-weight: 600; margin-top: 4px;">${duration} minutes</div>
                             </div>
                             
-                            <div>
+                            <div style="margin-bottom: 12px;">
                                 <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🔗 Meeting Link</span>
                                 <div style="margin-top: 8px;">
-                                    <a href="${meetLink}" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px;">Join Meeting</a>
+                                    <a href="${meetLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px;">Join Meeting</a>
                                 </div>
                             </div>
                         </div>
@@ -316,8 +327,11 @@ exports.handler = async (event) => {
                         <!-- Quick Actions -->
                         <div style="text-align: center; margin-top: 32px;">
                             <p style="color: #888; font-size: 14px; margin-bottom: 16px;">Quick Actions</p>
-                            <a href="mailto:${email}" style="display: inline-block; background: white; color: #00CED1; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 2px solid #00CED1; margin: 0 8px 8px 0;">Reply to Client</a>
-                            <a href="${meetLink}" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 0 8px 0;">Test Meeting Link</a>
+                            <div style="display: inline-block;">
+                                <a href="mailto:${email}" style="display: inline-block; background: white; color: #00CED1; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 2px solid #00CED1; margin: 0 8px 8px 0;">Reply to Client</a>
+                                <a href="${meetLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 0 8px 0;">Test Meeting Link</a>
+                                <a href="${googleCalendarLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #00CED1 0%, #FF7F50 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 0 8px 8px;">📅 Add to Calendar</a>
+                            </div>
                         </div>
 
                     </div>
@@ -325,7 +339,7 @@ exports.handler = async (event) => {
                     <!-- Footer -->
                     <div style="background: linear-gradient(135deg, rgba(245,232,199,0.3) 0%, rgba(194,216,185,0.3) 100%); padding: 24px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05);">
                         <p style="margin: 0; color: #666; font-size: 12px;">
-                            Reminder will be sent to <strong>${name}</strong> 15 minutes before the meeting
+                            Meeting is all set. No manual reminders needed—Google Calendar handles it! 
                         </p>
                     </div>
 
