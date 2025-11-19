@@ -92,8 +92,13 @@ exports.handler = async (event) => {
         timeZone: 'UTC',
     });
 
+    // Generate Google Calendar link
+    const startDateTime = dateObj.toISOString().replace(/\.\d{3}Z$/, 'Z'); // Ensure ISO format with Z for Google Calendar
+    const endDateTime = new Date(dateObj.getTime() + duration * 60 * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
+    const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(type + ' with ' + name)}&dates=${startDateTime.replace(/[-:]/g, '').substring(0, 15)}/${endDateTime.replace(/[-:]/g, '').substring(0, 15)}&details=${encodeURIComponent('Meeting Details:\nLink: ' + meetLink + '\nNotes: ' + (notes || 'None'))}&location=${encodeURIComponent(meetLink)}&sf=true&output=xml`;
+
     try {
-        // Client email with enhanced design
+        // Client email
         const clientHtml = `
         <!DOCTYPE html>
         <html lang="en">
@@ -135,7 +140,7 @@ exports.handler = async (event) => {
                                     <img 
                                         src="https://awodi.netlify.app/weekend.png" 
                                         alt="Calendar Icon" 
-                                        className="w-6 h-6 md:w-8 md:h-8 object-contain" 
+                                        className="w-1 h-1 md:w-1 md:h-1 object-contain" 
                                         style={{ display: 'inline-block' }}
                                     />
                                 </div>
@@ -275,7 +280,15 @@ exports.handler = async (event) => {
                             <h2 style="margin: 0 0 20px 0; color: #FF7F50; font-size: 20px; font-weight: 700;">Meeting Details</h2>
                             
                             <div style="margin-bottom: 12px;">
-                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📅 When</span>
+                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                 <img 
+                                        src="https://awodi.netlify.app/weekend.png" 
+                                        alt="Calendar Icon" 
+                                        className="w-1 h-1 md:w-1 md:h-1 object-contain" 
+                                        style={{ display: 'inline-block' }}
+                                    />
+                                 When
+                                 </span>
                                 <div style="color: #333; font-size: 16px; font-weight: 600; margin-top: 4px;">${formattedDate}</div>
                             </div>
                             
