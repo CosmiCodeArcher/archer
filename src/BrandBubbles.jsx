@@ -3,7 +3,7 @@ import "./BrandBubbles.css";
 
 const animations = ["swim1", "swim2"];
 
-const BrandBubbles = () => {
+const BrandBubbles = ({ toggleModal }) => {
   const [bubbles, setBubbles] = useState([]);
   const [miniBubbles, setMiniBubbles] = useState([]);
 
@@ -155,7 +155,10 @@ const BrandBubbles = () => {
           }}
           onMouseEnter={() => handleHover(bubble.id, true)}
           onMouseLeave={() => handleHover(bubble.id, false)}
-          onClick={() => handleClick(bubble.id)}
+          onClick={() => {
+            handleClick(bubble.id);
+            toggleModal();
+          }}
         >
           Tap Me
         </div>

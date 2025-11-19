@@ -6,6 +6,9 @@ import Footer from "./Footer";
 
 function Layout() {
   const [currentSection, setCurrentSection] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   const handleSectionChange = (section) => {
     setCurrentSection(section);
@@ -13,9 +16,9 @@ function Layout() {
 
   return (
     <div className="layout-container justify-between">
-      <BrandBubbles />
+      <BrandBubbles toggleModal={toggleModal} />
       <main className="layout-main">
-        <Hero currentSection={currentSection} setCurrentSection={setCurrentSection} />
+        <Hero currentSection={currentSection} setCurrentSection={setCurrentSection} isModalOpen={isModalOpen} toggleModal={toggleModal} />
       </main>
       <FloatingActionButton />
       <Footer onSectionChange={handleSectionChange} />

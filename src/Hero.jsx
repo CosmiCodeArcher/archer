@@ -7,9 +7,13 @@ import Contact from "./Contact";
 import { saveState, loadState } from "./localStorage";
 import PropTypes from "prop-types";
 
-function Hero({ currentSection, setCurrentSection }) {
+function Hero({
+  currentSection,
+  setCurrentSection,
+  isModalOpen,
+  toggleModal,
+}) {
   const [hoveredSection, setHoveredSection] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -47,8 +51,6 @@ function Hero({ currentSection, setCurrentSection }) {
       setHoveredSection(section);
     }
   };
-
-  const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   const sections = [
     { id: "portfolio", component: <Portfolio />, label: "Portfolio", preview: "See my projects" },
@@ -228,6 +230,8 @@ function Hero({ currentSection, setCurrentSection }) {
 Hero.propTypes = {
   currentSection: PropTypes.string,
   setCurrentSection: PropTypes.func.isRequired,
+  isModalOpen: PropTypes.bool.isRequired,
+  toggleModal: PropTypes.func.isRequired,
 };
 
 export default Hero;
