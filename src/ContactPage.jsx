@@ -147,9 +147,9 @@ function ContactPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
+        className="max-w-2xl mx-auto"
       >
-        <Tilt options={{ max: 5, scale: 1.01 }}>
-          <div className="bg-gradient-to-br from-modern-coral/10 to-modern-teal/10 dark:from-modern-coral/20 dark:to-modern-teal/20 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/30 dark:border-gray-700/30 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-modern-coral/10 to-modern-teal/10 dark:from-modern-coral/20 dark:to-modern-teal/20 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/30 dark:border-gray-700/30 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-modern-coral/20 to-transparent rounded-full blur-3xl -z-10" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-modern-teal/20 to-transparent rounded-full blur-3xl -z-10" />
@@ -165,7 +165,7 @@ function ContactPage() {
               method="POST"
               data-netlify="true"
               onSubmit={handleSubmit}
-              className="space-y-6 relative"
+              className="space-y-4 relative"
             >
               <input type="hidden" name="form-name" value="contact" />
 
@@ -180,7 +180,7 @@ function ContactPage() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("name")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-coral transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-coral transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
                   placeholder="Name"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -188,8 +188,8 @@ function ContactPage() {
                   htmlFor="name"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "name" || formData.name
-                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-modern-coral font-semibold"
-                      : "top-4 text-gray-500 dark:text-gray-400"
+                      ? "-top-4 text-xs bg-white dark:bg-gray-800 px-2 text-modern-coral font-semibold"
+                      : "top-2 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   Your Name
@@ -219,7 +219,7 @@ function ContactPage() {
                   onChange={handleChange}
                   onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-teal transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-modern-teal transition-all duration-300 peer placeholder-transparent text-gray-900 dark:text-gray-100"
                   placeholder="Email"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -227,8 +227,8 @@ function ContactPage() {
                   htmlFor="email"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "email" || formData.email
-                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-modern-teal font-semibold"
-                      : "top-4 text-gray-500 dark:text-gray-400"
+                      ? "-top-4 text-xs bg-white dark:bg-gray-800 px-2 text-modern-teal font-semibold"
+                      : "top-2 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   Your Email
@@ -252,12 +252,12 @@ function ContactPage() {
                   id="message"
                   name="message"
                   required
-                  rows="5"
+                  rows="3"
                   value={formData.message}
                   onChange={handleChange}
                   onFocus={() => setFocusedField("message")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full px-6 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-vintage-sage transition-all duration-300 resize-none peer placeholder-transparent text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-transparent rounded-xl focus:outline-none focus:border-vintage-sage transition-all duration-300 resize-none peer placeholder-transparent text-gray-900 dark:text-gray-100"
                   placeholder="Message"
                   whileFocus={{ scale: 1.02 }}
                 />
@@ -265,8 +265,8 @@ function ContactPage() {
                   htmlFor="message"
                   className={`absolute left-6 transition-all duration-300 pointer-events-none ${
                     focusedField === "message" || formData.message
-                      ? "-top-3 text-xs bg-white dark:bg-gray-800 px-2 text-vintage-sage font-semibold"
-                      : "top-4 text-gray-500 dark:text-gray-400"
+                      ? "-top-4 text-xs bg-white dark:bg-gray-800 px-2 text-vintage-sage font-semibold"
+                      : "top-2 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   Your Message
@@ -349,7 +349,6 @@ function ContactPage() {
               )}
             </form>
           </div>
-        </Tilt>
       </motion.div>
 
       {/* Quick Stats */}
