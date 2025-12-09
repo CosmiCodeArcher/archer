@@ -162,7 +162,7 @@ function Contact() {
                 className="text-4xl md:text-5xl"
               >
                 <img 
-                  src="https://awodi.netlify.app/weekend.png" 
+                  src="https://cc-archer.netlify.app/weekend.png" 
                   alt="Calendar Icon" 
                   className="w-8 h-8 md:w-10 md:h-10 object-contain" 
                   style={{ display: 'inline-block' }}

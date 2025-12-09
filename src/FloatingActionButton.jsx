@@ -46,7 +46,7 @@ function FloatingActionButton() {
             transition={{ duration: 0.5 }}
           >
             <img 
-              src="https://awodi.netlify.app/weekend.png" 
+              src="https://cc-archer.netlify.app/weekend.png" 
               alt="Calendar Icon" 
               className="w-6 h-6 md:w-8 md:h-8 object-contain" 
               style={{ display: 'inline-block' }}
