@@ -94,6 +94,7 @@ exports.handler = async (event) => {
         hour: 'numeric',
         minute: 'numeric',
         hour12: true,
+        timeZone: 'America/New_York',
     });
 
     // FIX #3: Generate Google Calendar links with correct timezone handling
@@ -135,7 +136,7 @@ exports.handler = async (event) => {
                     
                     <!-- Header with Gradient -->
                     <div style="background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); padding: 40px 30px; text-align: center; position: relative;">
-                        <img src="https://awodi.netlify.app/weekend.png" alt="Calendar" style="width: 64px; height: auto; margin-bottom: 16px; display: inline-block;">
+                        <img src="https://cc-archer.netlify.app/weekend.png" alt="Calendar" style="width: 64px; height: auto; margin-bottom: 16px; display: inline-block;">
                         <h1 style="margin: 0; color: white; font-size: 32px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Meeting Confirmed!</h1>
                         <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.95); font-size: 16px;">Your time has been reserved</p>
                     </div>
@@ -158,7 +159,7 @@ exports.handler = async (event) => {
                             <div style="display: table; width: 100%; margin-bottom: 16px;">
                                 <div style="display: table-cell; vertical-align: middle; width: 40px;">
                                     <img 
-                                        src="https://awodi.netlify.app/weekend.png" 
+                                        src="https://cc-archer.netlify.app/weekend.png" 
                                         alt="Calendar Icon" 
                                         style="width: 24px; height: 24px; display: inline-block;" 
                                     />
@@ -202,7 +203,7 @@ exports.handler = async (event) => {
                         <!-- Call to Action - FIX #4: Make button functional Google Calendar link -->
                         <div style="text-align: center; margin: 32px 0;">
                             <a href="${googleCalendarLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(255,127,80,0.3); transition: all 0.3s;">
-                                <img src="https://awodi.netlify.app/weekend.png" alt="Calendar" style="width: 16px; height: auto; margin-bottom: 0; display: inline-block; vertical-align: middle;"> Add to Google Calendar
+                                <img src="https://cc-archer.netlify.app/weekend.png" alt="Calendar" style="width: 16px; height: auto; margin-bottom: 0; display: inline-block; vertical-align: middle;"> Add to Google Calendar
                             </a>
                         </div>
 
@@ -264,7 +265,7 @@ exports.handler = async (event) => {
                     
                     <!-- Header -->
                     <div style="background: linear-gradient(135deg, #00CED1 0%, #FF7F50 100%); padding: 40px 30px; text-align: center;">
-                        <img src="https://awodi.netlify.app/bell.png" alt="Bell" style="width: 64px; height: auto; margin-bottom: 16px; display: inline-block;">
+                        <img src="https://cc-archer.netlify.app/bell.png" alt="Bell" style="width: 64px; height: auto; margin-bottom: 16px; display: inline-block;">
                         <h1 style="margin: 0; color: white; font-size: 32px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">New Meeting Alert!</h1>
                         <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.95); font-size: 16px;">You have a new meeting scheduled</p>
                     </div>
@@ -299,20 +300,13 @@ exports.handler = async (event) => {
                             <h2 style="margin: 0 0 20px 0; color: #FF7F50; font-size: 20px; font-weight: 700;">Meeting Details</h2>
                             
                             <div style="margin-bottom: 12px;">
-                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;"><img src="https://awodi.netlify.app/weekend.png" alt="Calendar" style="width: 16px; height: auto; margin-bottom: 0; display: inline-block; vertical-align: middle;"> When</span>
+                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;"><img src="https://cc-archer.netlify.app/weekend.png" alt="Calendar" style="width: 16px; height: auto; margin-bottom: 0; display: inline-block; vertical-align: middle;"> When</span>
                                 <div style="color: #333; font-size: 16px; font-weight: 600; margin-top: 4px;">${formattedDate}</div>
                             </div>
                             
                             <div style="margin-bottom: 12px;">
                                 <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⏱️ Duration</span>
                                 <div style="color: #333; font-size: 16px; font-weight: 600; margin-top: 4px;">${duration} minutes</div>
-                            </div>
-                            
-                            <div style="margin-bottom: 12px;">
-                                <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🔗 Meeting Link</span>
-                                <div style="margin-top: 8px;">
-                                    <a href="${meetLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px;">Join Meeting</a>
-                                </div>
                             </div>
                         </div>
 
@@ -324,13 +318,9 @@ exports.handler = async (event) => {
                         </div>
                         ` : ''}
 
-                        <!-- Quick Actions -->
                         <div style="text-align: center; margin-top: 32px;">
-                            <p style="color: #888; font-size: 14px; margin-bottom: 16px;">Quick Actions</p>
                             <div style="display: inline-block;">
-                                <a href="mailto:${email}" style="display: inline-block; background: white; color: #00CED1; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 2px solid #00CED1; margin: 0 8px 8px 0;">Reply to Client</a>
-                                <a href="${meetLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #FF7F50 0%, #00CED1 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 0 8px 0;">Test Meeting Link</a>
-                                <a href="${googleCalendarLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #00CED1 0%, #FF7F50 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 0 8px 8px;"><img src="https://awodi.netlify.app/weekend.png" alt="Calendar" style="width: 16px; height: auto; margin-bottom: 0; display: inline-block; vertical-align: middle;"> Add to Calendar</a>
+                                <a href="${googleCalendarLink}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #00CED1 0%, #FF7F50 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 0 8px 8px;"><img src="https://cc-archer.netlify.app/weekend.png" alt="Calendar" style="width: 16px; height: auto; margin-bottom: 0; display: inline-block; vertical-align: middle;"> Add to Calendar</a>
                             </div>
                         </div>
 
@@ -339,7 +329,7 @@ exports.handler = async (event) => {
                     <!-- Footer -->
                     <div style="background: linear-gradient(135deg, rgba(245,232,199,0.3) 0%, rgba(194,216,185,0.3) 100%); padding: 24px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05);">
                         <p style="margin: 0; color: #666; font-size: 12px;">
-                            Meeting is all set. No manual reminders needed—Google Calendar handles it! 
+                            Meeting is all set.
                         </p>
                     </div>
 
