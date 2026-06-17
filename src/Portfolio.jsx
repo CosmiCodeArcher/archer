@@ -122,6 +122,17 @@ function Portfolio() {
       qr: "/blockexp-qr.png",
       highlight: "Full-Stack",
     },
+    {
+      title: "Ascii-Art-Web",
+      description: "This project allows users input text and choose a banner type through a web form and see the result rendered in their browser.",
+      technologies: ["GO Lang"],
+      category: "Web2",
+      image: "/ascii-art-web.png",
+      live: "https://cosmi-ascii-web.netlify.app/",
+      stats: { commits: 3, hours: 70 },
+      qr: "/ascii-art-web-qr.png",
+      highlight: "Imperative Programming",
+    },
   ];
 
   const filters = [
