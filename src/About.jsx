@@ -7,39 +7,41 @@ function About() {
 
   const skills = [
     { 
+      name: "Go",
+      level: 20, 
+      // Tip: If your go.svg still has that big white square background, 
+      // using a transparent background version will fix the clipping!
+      icon: <img src="/go.svg" className="h-16 w-16 object-contain mx-auto" alt="Go"/>,
+      description: "Building fast, lightweight and efficient programmes",
+      color: "from-blue-400 to-cyan-400"
+    },
+    { 
       name: "React", 
-      level: 90, 
-      icon: "⚛️",
+      level: 70, 
+      icon: <img src="/react.svg" className="h-16 w-16 object-contain mx-auto" alt="React"/>,
       description: "Building dynamic UIs with hooks and modern patterns",
       color: "from-blue-400 to-cyan-400"
     },
     { 
       name: "Vite", 
-      level: 85, 
-      icon: "⚡",
+      level: 70,
+      icon: <img src="/vite.svg" className="h-16 w-16 object-contain mx-auto" alt="Vite"/>,
       description: "Lightning-fast development with modern build tools",
       color: "from-purple-400 to-pink-400"
     },
     { 
       name: "Tailwind", 
-      level: 88, 
-      icon: "🎨",
+      level: 70,
+      icon: <img src="/tail.svg" className="h-16 w-16 object-contain mx-auto" alt="Tailwind"/>,
       description: "Crafting beautiful, responsive designs efficiently",
       color: "from-teal-400 to-green-400"
     },
     { 
       name: "Python", 
-      level: 82, 
-      icon: "🐍",
+      level: 5, 
+      icon: <img src="/py.svg" className="h-16 w-16 object-contain mx-auto" alt="Python"/>,
       description: "Backend development and automation scripts",
       color: "from-yellow-400 to-orange-400"
-    },
-    { 
-      name: "WebSockets", 
-      level: 75, 
-      icon: "🔌",
-      description: "Real-time bidirectional communication",
-      color: "from-red-400 to-pink-400"
     },
   ];
 
