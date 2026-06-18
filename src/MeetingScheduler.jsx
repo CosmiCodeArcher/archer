@@ -206,7 +206,7 @@ function MeetingScheduler() {
             className="text-6xl md:text-8xl mb-4"
           >
             <img 
-              src="https://awodi.netlify.app/weekend.png" 
+              src="https://cc-archer.netlify.app/weekend.png" 
               alt="Calendar Icon" 
               className="w-10 h-10 md:w-14 md:h-14 object-contain"
               style={{ display: 'inline-block' }}
