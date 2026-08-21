@@ -162,7 +162,7 @@ function Hero({
             </button>
             <h2 className="modal-heading text-xl md:text-2xl">Welcome!</h2>
             <p className="modal-text text-xs md:text-sm">
-              Hey there! I'm Archer, a web developer crafting responsive and creative experiences. Explore my work, learn about me, or drop a message, I'm excited you're here!
+              Hey there! I'm Archer — I build things with Go and Python, from CLI tools to web servers, and I'm currently deep in an AI engineering fellowship. Explore my work, learn about me, or drop a message, I'm excited you're here!"
             </p>
             <button
               type="button"
