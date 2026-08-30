@@ -71,12 +71,14 @@ const BrandBubbles = ({ toggleModal }) => {
           const dx = mouseX - bubbleX;
           const dy = mouseY - bubbleY;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = 30;
-          const strength = 0.025;
+          const maxDistance = 25;
+          const strength = 0.05;
 
           if (distance < maxDistance) {
-            const moveX = -dx * strength;
-            const moveY = -dy * strength;
+            const proximity = 1 - distance / maxDistance; // 0 at edge of range, 1 right at the cursor
+            const easedStrength = strength * proximity * proximity; // ease-in, gentle at first contact
+            const moveX = -dx * easedStrength;
+            const moveY = -dy * easedStrength;
             let newLeft = bubbleX - moveX;
             let newTop = bubbleY - moveY;
 

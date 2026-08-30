@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Tilt } from "react-tilt";
+import BehindTheWork from "./BehindTheWork";
 
 function About() {
   const [activeSkill, setActiveSkill] = useState(null);
@@ -9,8 +10,6 @@ function About() {
     { 
       name: "Go",
       level: 20, 
-      // Tip: If your go.svg still has that big white square background, 
-      // using a transparent background version will fix the clipping!
       icon: <img src="/go.svg" className="h-16 w-16 object-contain mx-auto" alt="Go"/>,
       description: "Building fast, lightweight and efficient programmes",
       color: "from-blue-400 to-cyan-400"
@@ -48,26 +47,26 @@ function About() {
   const journey = [
     { 
       year: "The Beginning", 
-      title: "First Lines of Code", 
-      description: "Felt both intimidated and inspired seeing code for the first time",
+      title: "HTML, CSS, WEB-BASED JS", 
+      description: "I majored in web development to see the magic of code come to life in a beautiful and satisfying manner.",
       icon: "🌱"
     },
     { 
       year: "Growth", 
-      title: "Intensive Learning", 
-      description: "Completed online courses and dove deep into web development",
+      title: "REACT, FRAMEWORKS, GO, PYTHON", 
+      description: "Utilizing the website production power of REACT, building advanced CLI tools with GO and practicing PYTHON.",
       icon: "📚"
     },
     { 
       year: "Building", 
-      title: "40+ Projects", 
-      description: "Each project taught valuable lessons about code and UX",
+      title: ".....", 
+      description: "......",
       icon: "🚀"
     },
     { 
       year: "Present", 
-      title: "React Specialist", 
-      description: "Focused on creating responsive, user-friendly applications",
+      title: "*Growth⬆️", 
+      description: ".......",
       icon: "⚡"
     },
   ];
@@ -111,7 +110,7 @@ function About() {
           transition={{ delay: 0.2 }}
           className="text-lg md:text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto"
         >
-          A passionate web developer crafting experiences that blend creativity with functionality
+          A passionate SE crafting experiences that blend creativity with functionality
         </motion.p>
       </motion.div>
 
@@ -128,9 +127,8 @@ function About() {
               <div className="text-4xl mb-4">👨‍💻</div>
               <h3 className="text-xl font-bold mb-3 text-modern-coral">The Journey</h3>
               <p className="text-sm md:text-base text-gray-700 dark:text-gray-200">
-                My journey began from the intimidation and ambition I felt when I saw lines of code 
-                for the first time. Since then, I've immersed myself in the world of coding, building 
-                over 40 web applications that taught me invaluable lessons.
+                It was love at first sight when I saw lines of code. 
+                Since then, It's been braces and indentations.
               </p>
             </div>
           </Tilt>
@@ -142,9 +140,7 @@ function About() {
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-bold mb-3 text-modern-teal">The Vision</h3>
               <p className="text-sm md:text-base text-gray-700 dark:text-gray-200">
-                Looking ahead, I'm excited to dive further into React technologies like Next.js. 
-                I'm always open to new challenges and opportunities to grow as a developer, 
-                constantly pushing boundaries.
+                I'm always open to challenges and opportunities to grow.
               </p>
             </div>
           </Tilt>
@@ -169,20 +165,21 @@ function About() {
               key={skill.name}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: 0.1 }}
               whileHover={{ scale: 1.05 }}
               onHoverStart={() => setActiveSkill(skill.name)}
               onHoverEnd={() => setActiveSkill(null)}
+              style={{ transition: "transform 0.2s ease-out" }}
             >
-              <Tilt options={{ max: 20, scale: 1.05 }}>
+              <Tilt options={{ max: 20, scale: 1 }}>
                 <div className="relative group">
-                  <div className={`bg-gradient-to-br ${skill.color} p-0.5 rounded-xl`}>
-                    <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-4 rounded-xl h-full">
-                      <div className="text-3xl md:text-4xl mb-2 text-center">{skill.icon}</div>
-                      <h4 className="font-bold text-center mb-2 text-sm md:text-base dark:text-gray-100">{skill.name}</h4>
+                  <div className={`bg-gradient-to-br ${skill.color} p-0.5 rounded-full w-28 h-28 md:w-32 md:h-32 mx-auto`}>
+                    <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-2.5 rounded-full h-full w-full flex flex-col items-center justify-center">
+                      <div className="text-xl md:text-2xl mb-1 text-center flex-shrink-0">{skill.icon}</div>
+                      <h4 className="font-bold text-center mb-1 text-xs md:text-sm dark:text-gray-100 flex-shrink-0">{skill.name}</h4>
                       
                       {/* Skill Level Bar */}
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2 overflow-hidden">
+                      <div className="w-4/5 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-1 overflow-hidden flex-shrink-0">
                         <motion.div
                           className={`h-full bg-gradient-to-r ${skill.color} rounded-full`}
                           initial={{ width: 0 }}
@@ -190,7 +187,7 @@ function About() {
                           transition={{ duration: 1, delay: index * 0.1 }}
                         />
                       </div>
-                      <p className="text-xs text-center text-gray-800 dark:text-white font-bold">{skill.level}%</p>
+                      <p className="text-[10px] text-center text-gray-800 dark:text-white font-bold">{skill.level}%</p>
                       
                       {/* Tooltip */}
                       {activeSkill === skill.name && (
@@ -250,17 +247,16 @@ function About() {
           {journey.map((stage, index) => (
             <motion.div
               key={stage.year}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+              initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + index * 0.1 }}
-              className={`relative mb-8 md:mb-12 ${
-                index % 2 === 0 ? "md:pr-1/2 md:text-right" : "md:pl-1/2 md:ml-auto md:text-left"
-              }`}
+              className="relative mb-8 md:mb-12"
             >
               <div className="ml-16 md:ml-0">
-                <Tilt options={{ max: 10, scale: 1.02 }}>
+                <Tilt options={{ max: 10, scale: 1 }}>
                   <motion.div
                     whileHover={{ scale: 1.03 }}
+                    transition={{ type: "tween", duration: "0.2", ease: "easeOut"}}
                     className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm p-6 rounded-2xl border border-white/30 dark:border-modern-coral/30 shadow-lg hover:shadow-glow transition-all duration-300"
                   >
                     <div className="flex items-center gap-3 mb-3">
@@ -276,14 +272,6 @@ function About() {
                   </motion.div>
                 </Tilt>
               </div>
-              
-              {/* Timeline dot */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-                className="absolute left-8 md:left-1/2 top-8 w-4 h-4 bg-gradient-to-br from-modern-coral to-modern-teal rounded-full transform -translate-x-1/2 border-4 border-white shadow-lg"
-              />
             </motion.div>
           ))}
         </div>
@@ -295,7 +283,7 @@ function About() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Tilt options={{ max: 5, scale: 1.01 }}>
+        <Tilt options={{ max: 5, scale: 1 }}>
           <div className="bg-gradient-to-br from-vintage-sage/30 to-modern-teal/20 dark:from-vintage-sage/40 dark:to-modern-teal/30 backdrop-blur-md p-8 rounded-2xl border border-white/20 dark:border-gray-700/30">
             <h3 className="text-2xl md:text-3xl font-bold mb-4 text-center">
               <span className="bg-gradient-to-r from-modern-coral to-vintage-sage bg-clip-text text-transparent">
@@ -303,12 +291,10 @@ function About() {
               </span>
             </h3>
             <p className="text-center text-base md:text-lg text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
-              When I'm not coding, you can find me immersing myself in various arts. I find that 
-              these activities complement my development work by enhancing my mindset and creativity, 
-              bringing fresh perspectives to problem-solving.
+              Sagittarius | Casual hooper 🏀 | Philosophy & nature explorer.
             </p>
             <div className="flex justify-center gap-4 mt-6">
-              {["🎨", "🎵", "📚", "🎮"].map((icon, i) => (
+              {["🏀", "🎨", "🎵", "📚", "🎮"].map((icon, i) => (
                 <motion.div
                   key={i}
                   whileHover={{ scale: 1.2, rotate: 360 }}
@@ -318,6 +304,9 @@ function About() {
                   {icon}
                 </motion.div>
               ))}
+            </div>
+            <div className="flex justify-center">
+              <BehindTheWork />
             </div>
           </div>
         </Tilt>
