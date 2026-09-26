@@ -36,15 +36,14 @@ export default [
     },
   },
   {
-    // Netlify Functions run on Node as CommonJS, not in the browser. Without
-    // this block ESLint reports require, exports and process as undefined.
-    // Planned for ROADMAP P2.2; pulled forward in P1.1 because reading
-    // MEETING_ROOM_URL would otherwise have raised the error count.
-    // P1.2 ports the function to ES modules; then sourceType goes.
+    // Netlify Functions run on Node, not in the browser, so they get Node's
+    // built-in globals (process, Buffer, URL …) instead of browser ones.
+    // nodeBuiltin, not node: it leaves out CommonJS's require, module and
+    // exports, which don't exist in an ES module. So if require() ever comes
+    // back — the bug that broke every deploy (hotfix 0007) — lint flags it.
     files: ['netlify/functions/**/*.js'],
     languageOptions: {
-      sourceType: 'commonjs',
-      globals: globals.node,
+      globals: globals.nodeBuiltin,
     },
   },
 ]

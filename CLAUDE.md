@@ -129,6 +129,11 @@ the roadmap step that fixes it. When a step lands, delete its lines here.
   is a major upgrade. → P1.2
 - `.env` was never committed (verified 2026-09-26; ADR 0001 erratum).
   Rotation is scheduled hygiene. → P0.3
+- `RESEND_API_KEY` is set in Netlify, but nothing in the repo reads it: a live
+  credential with no owner in the code. Keep it for P4.3, or revoke it at
+  Resend and delete it from Netlify. → P0.5
+- Netlify deploy logs are publicly readable. Today they show env var *names*,
+  not values, but anything a build ever prints would be public. → P0.4
 
 **Correctness**
 - The time model is wrong in three ways: slots are defined in the *visitor's*
@@ -143,6 +148,11 @@ the roadmap step that fixes it. When a step lands, delete its lines here.
   needs the real schema first: export it into
   `supabase/migrations/0000_meetings_baseline.sql`. → P1.4
 - Double-booking race: check-then-insert with no unique constraint. → P1.4
+- Local checks can't see deploy failures. `npm run build` never bundles
+  `netlify/functions/`, and Netlify can start enforcing new checks with no
+  change in the repo — that's how every deploy began failing after 30 Aug
+  (fixed by hotfix 0007). Until CI runs Netlify's bundler, the deploy itself
+  is the only proof. → P2.2
 - Supabase pauses free projects after about 7 days of low activity. Nothing
   keeps it awake, and nothing alerts on failure. → P1.5
 - `BehindTheWork.jsx` references `/behind-the-work/01.jpg` and `02.jpg`, which
@@ -167,9 +177,6 @@ the roadmap step that fixes it. When a step lands, delete its lines here.
   resolves because `eslint-plugin-react`, a dev dependency, happens to install
   it. Declare it, or drop the imports, depending on P2.2's prop-types
   decision. → P2.2, P2.3
-- `package.json` sets `"type": "module"`, so plain Node refuses the CommonJS
-  function (`require` in an ES module). It works only because Netlify's
-  bundler converts it. → P1.2
 
 **Accessibility**
 - Bubbles in `BrandBubbles.jsx` are `<div>`s with `onClick`: not keyboard
@@ -211,6 +218,9 @@ the roadmap step that fixes it. When a step lands, delete its lines here.
   with `git apply --3way`, show the staged diff, and wait for the owner's
   approval before committing. If a patch fails, report which hunk failed and
   stop. Never hand-edit a patch to force it through.
+- After every push, confirm the Netlify deploy shows **Published** before
+  calling the work done. A green local build doesn't prove the function
+  ships (see Known problems).
 - After applying a patch or finishing a local task, write a review bundle per
   `docs/runbooks/review-bundles.md`, stored outside the repo. Never include
   secret values.

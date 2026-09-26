@@ -22,9 +22,9 @@ that. The diff is the easy part; the reasoning is why the bundle exists.
 Never inside the repo. Bundles contain local paths, full command output and
 sometimes screenshots, and none of that belongs in a public history.
 
-**Naming:** `YYYY-MM-DD_NN_<shorthash>_<slug>.md`, where `NN` is that day's
-sequence number. For example:
-`2026-09-26_01_c780d50_apply-0003-docs-correct-leak-claim.md`.
+**Naming:** `review-NN-<what>-<topic>.md`, where `NN` counts up across the
+whole project. For example: `review-03-patch-0006-stop-the-lies.md`. The date
+and commit hash go in the header table, not the name.
 
 **The bundle is a single `.md` file** (owner's standing rule, 2026-09-26). No
 `.patch` file beside it: the patch is already in the Downloads folder and on

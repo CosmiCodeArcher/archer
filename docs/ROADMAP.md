@@ -1,8 +1,9 @@
 # Roadmap
 
-**Living document.** Last updated 2026-09-26 (patch 0006).
-**Where we are:** phase P1 is in progress. P1.1's code has landed; its owner
-step (the meeting room) and P1.0 are next, then P1.2.
+**Living document.** Last updated 2026-09-26 (hotfix 0007).
+**Where we are:** phase P1 is in progress. Hotfix 0007 restores deploys and
+the booking function, which had been down since at least 30 Aug. P1.1 is
+then complete apart from its done-when checks. Next: P1.0, then P1.2.
 
 This is the plan for turning the portfolio into a platform, without breaking
 what's live along the way. It says *what* happens in *what order*, and *why
@@ -178,7 +179,19 @@ The order is in `docs/runbooks/credential-rotation.md`: replace first, then
 revoke. It's hygiene, not an emergency. It becomes moot at P4.3, which deletes
 the Gmail password entirely.
 
-**Exit gate:** P0.1–P0.2 done (P0.3 at your discretion).
+**P0.4 Make deploy logs private** · S
+
+Netlify site settings → build & deploy → deploy log visibility. They're
+public today, and while they show only variable names now, a build that
+printed a value would publish it.
+
+**P0.5 Decide on `RESEND_API_KEY`** · S
+
+It's set in Netlify but no code reads it. Either keep it deliberately for
+P4.3 (and note that here), or revoke it in Resend and delete it from Netlify.
+An unused live credential is risk with no benefit.
+
+**Exit gate:** P0.1, P0.2, P0.4 and P0.5 done (P0.3 at your discretion).
 
 ---
 
@@ -204,7 +217,8 @@ What the site promises, and what actually happens (verified 2026-09-26):
 | "Your meeting is at 10:00" | The email shows New York time | `schedule-meeting.js` | P1.4 |
 | "This slot is free" | Booked slots never grey out for visitors east of UTC, including your own zone (WAT) | `MeetingScheduler.jsx` | P1.4 |
 | *(implied)* "Your details are private" | Anyone holding the public key can read every booking | no RLS on `meetings` | P1.3 |
-| *(implied)* "Booking works" | Supabase pauses free projects after a quiet week | platform policy | P1.5 |
+| *(implied)* "Booking works" | The function crashed on load (HTTP 502) since at least 30 Aug, so every booking failed; and since Netlify began enforcing the module check, no deploy had succeeded | `schedule-meeting.js` | Hotfix 0007 |
+| *(implied)* "Booking keeps working" | Supabase pauses free projects after a quiet week | platform policy | P1.5 |
 
 ### P1.0 Preview deploys · 👤 · S
 
@@ -231,10 +245,10 @@ any release.
 
 ### P1.1 Stop the lies · 👤 + 📦 · S
 
-**Status:** code landed in patch 0006. Remaining: 👤 step 1 (create the room,
-set `MEETING_ROOM_URL`), then the done-when checks. Until the room exists,
-booking emails honestly say the link will follow, and your copy reminds you
-to send it.
+**Status:** code landed in patch 0006; 👤 step 1 done (room created from the
+Meet homepage and set as `MEETING_ROOM_URL`, 2026-09-26). Nothing reached
+visitors until hotfix 0007 fixed deploys. Remaining: the done-when checks,
+once 0007 shows **Published**.
 
 **What:**
 
@@ -274,12 +288,11 @@ secrets, and content.
 
 **What:**
 
-- **Port to the modern Netlify Functions API** (ES modules, `.mjs`,
-  `export default` plus `export const config`). Plain Node refuses the current
-  file (`package.json` says `"type": "module"`, the file uses `require`); it
-  only works because Netlify's bundler converts it. The port also unlocks
-  config-based rate limiting, and the `sourceType: 'commonjs'` line P1.1 added
-  to `eslint.config.js` can go.
+- **Move to Netlify's newer Functions API** (`export default` taking a
+  `Request` and returning a `Response`, plus `export const config`). Hotfix
+  0007 already made the file an ES module, with the old Lambda-style
+  `handler` kept to stay minimal. The newer API is what unlocks config-based
+  rate limiting.
 - **One validated server config.** Reads the ADR 0003 variable names first and
   falls back to the old ones, logging a warning. You can switch Netlify's
   variables whenever it suits you, with no synchronised "flag day".
@@ -481,6 +494,13 @@ cleared the first row, leaving 19:
 
 Then add a GitHub Actions workflow that runs `npm ci`, lint, and build on
 every push. It's free for public repos. Add a status badge to the README.
+
+**The workflow must also bundle the functions the way Netlify does.** `npm
+run build` never touches `netlify/functions/`, which is how a broken function
+passed every local check while every deploy failed (hotfix 0007). The check
+that caught it runs Netlify's own bundler (`@netlify/zip-it-and-ship-it`,
+`nft` mode, with the enforced flags on), plus a one-line
+`import()` of each function.
 
 **Why:** "run lint before declaring work complete" means nothing while lint
 fails anyway. CI turns "does it build?" into one answer, visible to everyone,
@@ -837,5 +857,6 @@ changed.
 
 | Date | Change | Why |
 |---|---|---|
+| 2026-09-26 | Hotfix 0007: function converted to ES modules | Every deploy had failed since Netlify began enforcing its CommonJS-under-`"type": "module"` check, and the live function crashed with a 502. Found by review bundle 03. Added P0.4, P0.5, and a Netlify bundle check to P2.2's CI |
 | 2026-09-26 | P1 in progress; P1.1 code landed (patch 0006) | Also: pulled P2.2's ESLint Node block forward (lint 27 → 19); city name replaced with the WAT timezone label in docs, since `Africa/Lagos` names a zone, not an address |
 | 2026-09-26 | Roadmap created (patch 0005) | Gives every patch a place in a plan. P1 ordered around the Supabase key deadline (ADR 0003) and the deeper timezone bug found while surveying the code. |

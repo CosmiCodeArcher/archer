@@ -1,5 +1,12 @@
-const nodemailer = require('nodemailer');
-const { createClient } = require('@supabase/supabase-js');
+// ES module syntax (import/export), because package.json declares
+// "type": "module": every .js file in this repo is an ES module. This file
+// used require()/exports (CommonJS), which Node refuses to load in an ES
+// module scope. The live function crashed on load with a 502, and since
+// Netlify began enforcing the check, every deploy failed (hotfix 0007).
+// The Lambda-style handler signature is unchanged; ROADMAP P1.2 moves to
+// Netlify's newer Request/Response API.
+import nodemailer from 'nodemailer';
+import { createClient } from '@supabase/supabase-js';
 
 // Config
 const GMAIL_USER = process.env.GMAIL_USER;
@@ -39,7 +46,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
