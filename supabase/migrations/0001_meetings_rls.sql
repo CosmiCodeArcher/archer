@@ -44,8 +44,10 @@
 -- Deny-by-default. We are deliberately writing no policies for `anon`, which
 -- means anon can do nothing here at all.
 --
--- The `service_role` key bypasses RLS entirely and is unaffected by this.
--- That is why it must never reach the browser.
+-- The `service_role` Postgres role bypasses RLS entirely and is unaffected
+-- by this. Both the legacy service_role key and its successor, the Supabase
+-- secret key (ADR 0003), act as that role. That is why neither key may ever
+-- reach the browser.
 -- ───────────────────────────────────────────────────────────────────────────
 alter table public.meetings enable row level security;
 

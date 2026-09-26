@@ -56,11 +56,22 @@ export const contactEmailParts = {
   domain: contactEmail.split("@")[1],
 };
 
+/**
+ * Every outbound link, named once. Components keep their own icons, colours
+ * and wording, but never their own copy of a URL — that's how three different
+ * contact emails ended up on the site at once (ROADMAP P1.1).
+ */
+export const links = {
+  github: "https://github.com/CosmiCodeArcher",
+  linkedin: "https://www.linkedin.com/in/awodi-ochiponu-b10126204",
+  email: `mailto:${contactEmail}`,
+};
+
 export const socials = [
   {
     name: "GitHub",
     handle: "CosmiCodeArcher",
-    url: "https://github.com/CosmiCodeArcher",
+    url: links.github,
     description: "Check out my code",
     // Tailwind gradient classes must appear as complete literal strings
     // somewhere in the source, or the JIT compiler will not generate them.
@@ -71,14 +82,14 @@ export const socials = [
   {
     name: "LinkedIn",
     handle: "awodi-ochiponu",
-    url: "https://www.linkedin.com/in/awodi-ochiponu-b10126204",
+    url: links.linkedin,
     description: "Let's connect professionally",
     gradient: "from-blue-400 to-cyan-400",
   },
   {
     name: "Email",
     handle: contactEmail,
-    url: `mailto:${contactEmail}`,
+    url: links.email,
     description: "Drop me an email",
     gradient: "from-red-400 to-pink-400",
   },

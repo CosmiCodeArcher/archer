@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tilt } from "react-tilt";
+import { contactEmail, links } from "./config/site";
 
 function ContactPage() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [focusedField, setFocusedField] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const socialLinks = [
     {
       name: "Email",
       icon: "✉️",
-      value: "ochiponumusa@gmail.com",
-      link: "mailto:ochiponumusa@gmail.com",
+      value: contactEmail,
+      link: links.email,
       color: "from-red-400 to-pink-400",
       description: "Drop me an email"
     },
@@ -21,7 +23,7 @@ function ContactPage() {
       name: "LinkedIn",
       icon: "💼",
       value: "linkedin.com/in/awodi-ochiponu",
-      link: "https://www.linkedin.com/in/awodi-ochiponu-b10126204",
+      link: links.linkedin,
       color: "from-blue-400 to-cyan-400",
       description: "Let's connect professionally"
     },
@@ -29,33 +31,38 @@ function ContactPage() {
       name: "GitHub",
       icon: "🐙",
       value: "github.com/CosmiCodeArcher",
-      link: "https://github.com/CosmiCodeArcher",
+      link: links.github,
       color: "from-gray-600 to-gray-800",
       description: "Check out my code"
     },
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(false);
     setShowParticles(true);
-    
+
     const form = e.target;
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(new FormData(form)).toString(),
-    })
-      .then(() => {
-        setTimeout(() => {
-          window.location.href = "/success";
-        }, 1000);
-      })
-      .catch((error) => {
-        alert(error);
-        setIsSubmitting(false);
-        setShowParticles(false);
+    try {
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(form)).toString(),
       });
+      // fetch() only rejects when the network fails. A 404 or 500 response
+      // still "succeeds", so the status must be checked explicitly.
+      // Previously any response, including an error, led to /success.
+      if (!res.ok) throw new Error(`Form submission failed with status ${res.status}`);
+      setTimeout(() => {
+        window.location.href = "/success";
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      setSubmitError(true);
+      setIsSubmitting(false);
+      setShowParticles(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -168,6 +175,16 @@ function ContactPage() {
               className="space-y-4 relative"
             >
               <input type="hidden" name="form-name" value="contact" />
+
+              {/* Honeypot: invisible to people, but naive bots fill in every
+                  field. Netlify discards submissions where it has a value.
+                  public/form.html declares it (netlify-honeypot="bot-field");
+                  until now this form never rendered it. */}
+              <p className="hidden" aria-hidden="true">
+                <label>
+                  Leave this empty: <input name="bot-field" tabIndex={-1} autoComplete="off" />
+                </label>
+              </p>
 
               {/* Name Field */}
               <div className="relative">
@@ -336,6 +353,16 @@ function ContactPage() {
                   )}
                 </AnimatePresence>
               </motion.button>
+
+              {submitError && (
+                <p role="alert" className="text-sm text-center text-red-600 dark:text-red-400">
+                  Your message couldn&apos;t be sent. Please email me directly at{" "}
+                  <a href={links.email} className="underline font-semibold">
+                    {contactEmail}
+                  </a>
+                  .
+                </p>
+              )}
 
               {/* Character count for message */}
               {formData.message && (

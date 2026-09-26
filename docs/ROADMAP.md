@@ -1,7 +1,8 @@
 # Roadmap
 
-**Living document.** Last updated 2026-09-26 (patch 0005).
-**Where we are:** phase P0 is closing. Next up: steps P1.0 and P1.1.
+**Living document.** Last updated 2026-09-26 (patch 0006).
+**Where we are:** phase P1 is in progress. P1.1's code has landed; its owner
+step (the meeting room) and P1.0 are next, then P1.2.
 
 This is the plan for turning the portfolio into a platform, without breaking
 what's live along the way. It says *what* happens in *what order*, and *why
@@ -55,7 +56,7 @@ testing. Writing patches doesn't count against it. **S** = under an hour,
 **M** = one to two hours, **L** = several sittings. They're guesses; they'll
 get better as we go.
 
-**Status:** `done` · `closing` · `next` · `planned` · `sketch`
+**Status:** `done` · `in progress` · `closing` · `next` · `planned` · `sketch`
 
 ---
 
@@ -100,7 +101,7 @@ them.
 | Phase | Goal | Status | Effort | Exit gate (short) |
 |---|---|---|---|---|
 | **P0** Groundwork | A workflow and a record that make everything else safe | `closing` | S | Owner items done |
-| **P1** Nothing lies to a visitor | Booking and contact keep every promise | `next` | L | Correctness + security items resolved; legacy keys off |
+| **P1** Nothing lies to a visitor | Booking and contact keep every promise | `in progress` | L | Correctness + security items resolved; legacy keys off |
 | **P2** Honest front door | Site and repo are true, clean, accessible | `planned` | M | CI green; README true; keyboard pass |
 | **P3** Platform foundations | A new wing = a new folder | `planned` | L | A throwaway wing added with zero edits elsewhere |
 | **P4** Identity & integrations | Your own domain, email, and real meeting links | `planned` | L | Own domain; Gmail password deleted; per-meeting links |
@@ -111,7 +112,7 @@ How the phases depend on each other:
 
 ```
   P0 ──► P1 ──┬──────────────────────────────► P4.3 ─ P4.5
- done   next  │   Nothing lies to a visitor     Resend, Calendar API, alerts
+ done   now   │   Nothing lies to a visitor     Resend, Calendar API, alerts
               │                                    ▲
               ▼                                    │ needs a domain
               P2 ──► P3 ──► P5 ──► Horizon         │
@@ -183,7 +184,7 @@ the Gmail password entirely.
 
 ## P1 — Nothing lies to a visitor
 
-**Status:** `next`
+**Status:** `in progress`
 **Deadline inside this phase:** P1.3 before **1 December 2026** (ADR 0003).
 
 **Goal:** every promise the site makes to a visitor is kept. The time is
@@ -197,11 +198,11 @@ What the site promises, and what actually happens (verified 2026-09-26):
 
 | The site says | What actually happens | Where | Step |
 |---|---|---|---|
-| "Here's your meeting link" | A random URL that leads nowhere | `schedule-meeting.js`, `Math.random()` | P1.1 |
+| "Here's your meeting link" | A random URL that leads nowhere — and a promise that the link arrives "15 minutes before", which nothing sends | `schedule-meeting.js` | P1.1 |
 | "Message sent!" | Shown even when the submission failed | `Contact.jsx`, `ContactPage.jsx` | P1.1 |
 | "Email me at …" | Three different addresses in three components | `Contact.jsx`, `ContactPage.jsx`, `Footer.jsx` | P1.1 |
 | "Your meeting is at 10:00" | The email shows New York time | `schedule-meeting.js` | P1.4 |
-| "This slot is free" | Booked slots never grey out for visitors east of UTC, including Lagos | `MeetingScheduler.jsx` | P1.4 |
+| "This slot is free" | Booked slots never grey out for visitors east of UTC, including your own zone (WAT) | `MeetingScheduler.jsx` | P1.4 |
 | *(implied)* "Your details are private" | Anyone holding the public key can read every booking | no RLS on `meetings` | P1.3 |
 | *(implied)* "Booking works" | Supabase pauses free projects after a quiet week | platform policy | P1.5 |
 
@@ -229,6 +230,11 @@ limits to know about:
 any release.
 
 ### P1.1 Stop the lies · 👤 + 📦 · S
+
+**Status:** code landed in patch 0006. Remaining: 👤 step 1 (create the room,
+set `MEETING_ROOM_URL`), then the done-when checks. Until the room exists,
+booking emails honestly say the link will follow, and your copy reminds you
+to send it.
 
 **What:**
 
@@ -269,9 +275,11 @@ secrets, and content.
 **What:**
 
 - **Port to the modern Netlify Functions API** (ES modules, `.mjs`,
-  `export default` plus `export const config`). This clears the 8 lint errors
-  that come from ESLint checking CommonJS server code as if it were browser
-  code, and it unlocks config-based rate limiting.
+  `export default` plus `export const config`). Plain Node refuses the current
+  file (`package.json` says `"type": "module"`, the file uses `require`); it
+  only works because Netlify's bundler converts it. The port also unlocks
+  config-based rate limiting, and the `sourceType: 'commonjs'` line P1.1 added
+  to `eslint.config.js` can go.
 - **One validated server config.** Reads the ADR 0003 variable names first and
   falls back to the old ones, logging a warning. You can switch Netlify's
   variables whenever it suits you, with no synchronised "flag day".
@@ -349,12 +357,12 @@ reversible; why database changes are the riskiest part of a deploy.
 **What's wrong, concretely.** Verified with real date arithmetic:
 
 ```
-A visitor in Lagos (UTC+1) picks Monday 5 Oct 2026, 10:00 AM
+A visitor in West Africa Time (WAT, UTC+1) picks Monday 5 Oct 2026, 10:00 AM
   browser builds local 10:00     →  sends 2026-10-05T09:00:00.000Z
   function, on a UTC clock       →  stores date 2026-10-05, time 09:00:00
   email, hardcoded New York      →  "Monday, October 5, 2026 at 5:00 AM"
 
-The next Lagos visitor opens the calendar:
+The next WAT visitor opens the calendar:
   isTimeSlotBooked checks date   →  "2026-10-04"   (local midnight, converted
                                                     to UTC, lands on the 4th)
                      and time    →  "10:00:00"
@@ -362,7 +370,7 @@ The next Lagos visitor opens the calendar:
   they submit                    →  409 "already booked"
 
 A visitor in Tokyo (UTC+9) sees "10:00 AM"
-  = 01:00 UTC = 02:00 in Lagos   →  the calendar offers you a 2 a.m. meeting
+  = 01:00 UTC = 02:00 WAT        →  the calendar offers you a 2 a.m. meeting
 ```
 
 There are three separate bugs in there. The slots are defined in the
@@ -374,10 +382,11 @@ zone, display it in **theirs**.
 
 - **Availability is defined once, in your timezone**, in `src/config/`. For
   example: `{ timezone: 'Africa/Lagos', weekdays: Mon–Fri, slots: ['10:00',
-  '14:00'] }`.
+  '14:00'] }`. (`Africa/Lagos` is the IANA name for West Africa Time. It
+  names a timezone, not where you live, and the site only ever shows "WAT".)
 - **The browser converts each slot into the visitor's zone** and labels both:
-  "11:00 AM your time (10:00 in Lagos)". Use a real timezone library or the
-  `Intl` API, never hand-written offsets. Lagos has no daylight saving time,
+  "11:00 AM your time (10:00 WAT)". Use a real timezone library or the
+  `Intl` API, never hand-written offsets. WAT has no daylight saving time,
   but many visitors' zones do. (`date-fns` is already installed and unused; this
   step decides whether it earns its place.)
 - 👤 **Migration 0002.** Adds `starts_at timestamptz`, `duration_minutes`, and
@@ -399,7 +408,7 @@ the database itself refuse the second insert. Correctness belongs at the
 lowest layer that can enforce it.
 
 **Done when:**
-- [ ] Bookings made from emulated Asia/Tokyo, America/New_York, and Africa/Lagos land on the Lagos slot they were shown
+- [ ] Bookings made from emulated Asia/Tokyo, America/New_York, and Africa/Lagos land on the WAT slot they were shown
 - [ ] Each confirmation email shows the recipient's local time
 - [ ] A booked slot greys out for visitors in every zone
 - [ ] Two simultaneous submissions produce exactly one row
@@ -460,11 +469,12 @@ draft.
 
 ### P2.2 Lint at zero, enforced by CI · 📦 · S
 
-**What:** fix the lint errors that remain after P1.2. There are 27 today:
+**What:** fix the remaining lint errors. There were 27 on 2026-09-26; P1.1
+cleared the first row, leaving 19:
 
 | Count | Rule | Fix |
 |---|---|---|
-| 8 | `no-undef` in `netlify/functions/` | P1.2's port, plus a Node-globals block for `netlify/**` in `eslint.config.js` |
+| ~~8~~ 0 | `no-undef` in `netlify/functions/` | Done in P1.1: a Node-globals block for `netlify/functions/**` in `eslint.config.js` |
 | 14 | `react/no-unescaped-entities` (apostrophes in JSX) | Escape them, or use typographic quotes |
 | 4 | `react/prop-types` | Decide: add prop-types, or switch the rule off (common in JavaScript React projects). Record the choice. |
 | 1 | `no-unused-vars` (`hoveredProject` in `Portfolio.jsx`) | Remove it |
@@ -827,4 +837,5 @@ changed.
 
 | Date | Change | Why |
 |---|---|---|
+| 2026-09-26 | P1 in progress; P1.1 code landed (patch 0006) | Also: pulled P2.2's ESLint Node block forward (lint 27 → 19); city name replaced with the WAT timezone label in docs, since `Africa/Lagos` names a zone, not an address |
 | 2026-09-26 | Roadmap created (patch 0005) | Gives every patch a place in a plan. P1 ordered around the Supabase key deadline (ADR 0003) and the deeper timezone bug found while surveying the code. |

@@ -24,9 +24,11 @@ sometimes screenshots, and none of that belongs in a public history.
 
 **Naming:** `YYYY-MM-DD_NN_<shorthash>_<slug>.md`, where `NN` is that day's
 sequence number. For example:
-`2026-09-26_01_c780d50_apply-0003-docs-correct-leak-claim.md`. If the
-operation applied a patch, keep the raw `.patch` beside the bundle, with the
-same stem.
+`2026-09-26_01_c780d50_apply-0003-docs-correct-leak-claim.md`.
+
+**The bundle is a single `.md` file** (owner's standing rule, 2026-09-26). No
+`.patch` file beside it: the patch is already in the Downloads folder and on
+GitHub as a commit.
 
 ## What goes in
 
@@ -53,9 +55,9 @@ dropping it; an explicit "none" is information.
    elsewhere. Record *what* was set, never the value: "set
    `SUPABASE_SECRET_KEY` in Netlify (Functions scope)".
 9. **How to undo:** the exact commands, given whether the change was pushed.
-10. **Appendix (optional):** the full diff. The chat session can read it from
-    GitHub by commit hash, so include it only for small diffs, or if the
-    commit wasn't pushed.
+10. **No diff appendix.** The chat session reads diffs from GitHub by commit
+    hash. The bundle is for what the diff can't show. Exception: if the commit
+    wasn't pushed, say so, and include the diff so the review isn't blocked.
 
 ## Hard rules
 

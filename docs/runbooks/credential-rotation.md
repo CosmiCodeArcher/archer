@@ -14,7 +14,7 @@
 >
 > Also note: the variable names in Phase 4 are the *target* names. The
 > Netlify function still reads the old names (`SUPABASE_URL`,
-> `SUPABASE_ANON_KEY`, `YOUR_EMAIL`) until the booking-flow patch lands.
+> `SUPABASE_ANON_KEY`, `YOUR_EMAIL`) until roadmap steps P1.2 and P1.3 land.
 > Set the new names alongside the old ones; don't delete the old ones yet.
 >
 > **Supabase keys are handled differently now (2026-09-26):** don't rotate

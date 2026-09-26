@@ -10,6 +10,27 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Meeting room (ROADMAP P1.1)
+// A fixed, real room — a Zoom personal room or a Meet link made from the Meet
+// homepage — configured in Netlify as MEETING_ROOM_URL. It replaces a URL that
+// was generated from a random string and led nowhere.
+//
+// Why an env var and not src/config/site.js: anything in site.js ships in the
+// public JavaScript bundle. The room should only reach people who have booked.
+//
+// Fail safe: if the variable is missing or isn't an https URL, this returns
+// null. The client's email then says the link will follow, and the operator's
+// copy flags the problem. A missing setting never produces a dead link.
+const getMeetingRoom = () => {
+    const raw = (process.env.MEETING_ROOM_URL || '').trim();
+    try {
+        const url = new URL(raw);
+        return url.protocol === 'https:' ? url.toString() : null;
+    } catch {
+        return null;
+    }
+};
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -37,8 +58,7 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: 'Missing fields' };
     }
 
-    // Generate Meet link
-    const meetLink = `https://meet.google.com/${Math.random().toString(36).substr(2, 9)}`;
+    const meetingRoom = getMeetingRoom();
 
     // FIX #1: Parse the ISO string correctly to preserve user's local time
     const dateObj = new Date(dateTime);
@@ -75,7 +95,11 @@ exports.handler = async (event) => {
         .from('meetings')
         .insert({
             name, email, date, time: parsedTime,
-            duration, type, notes, meet_link: meetLink,
+            duration, type, notes,
+            // Records which link this client was sent. '' rather than null
+            // when no room is configured: the table's schema isn't in the
+            // repo yet, so we can't be sure the column accepts null.
+            meet_link: meetingRoom ?? '',
         })
         .select()
         .single();
@@ -116,7 +140,27 @@ exports.handler = async (event) => {
     const startGCalTime = formatGCalTime(startDateTime);
     const endGCalTime = formatGCalTime(endDateTime);
 
-    const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(type + ' with ' + name)}&dates=${startGCalTime}/${endGCalTime}&details=${encodeURIComponent('Meeting Details:\nLink: ' + meetLink + '\nNotes: ' + (notes || 'None'))}&location=${encodeURIComponent(meetLink)}&sf=true&output=xml`;
+    const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(type + ' with ' + name)}&dates=${startGCalTime}/${endGCalTime}&details=${encodeURIComponent('Meeting Details:\nLink: ' + (meetingRoom || 'to follow by email') + '\nNotes: ' + (notes || 'None'))}${meetingRoom ? `&location=${encodeURIComponent(meetingRoom)}` : ''}&sf=true&output=xml`;
+
+    // What the client is told about the link. The old text promised the link
+    // "15 minutes before our scheduled time", but nothing sends it (the
+    // reminder function was removed in 4838a4d). Only promise what happens.
+    const clientLinkHtml = meetingRoom
+        ? `<strong>🔗 Your meeting link</strong><br>
+                                <a href="${meetingRoom}" target="_blank" rel="noopener noreferrer" style="color: #FF7F50; font-weight: 600;">Join the meeting</a><br>
+                                <span style="color: #666;">You'll be let in when the meeting starts. The link is also in the calendar event below.</span>`
+        : `<strong>🔗 Meeting link</strong><br>
+                                <span style="color: #666;">I'll email you the meeting link before we meet.</span>`;
+
+    // Shown only in the operator's copy, only when something needs doing.
+    const operatorRoomNotice = meetingRoom ? '' : `
+                        <div style="background: #FFF4E5; border-left: 4px solid #FF7F50; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;">
+                            <p style="margin: 0; color: #8A4B00; font-size: 14px; line-height: 1.6;">
+                                <strong>⚠️ Action needed: no meeting link was sent.</strong><br>
+                                MEETING_ROOM_URL isn't set in Netlify (or isn't an https URL). The client was told you'll email the link — send it before the meeting.
+                            </p>
+                        </div>
+`;
 
     try {
         // Client email
@@ -195,8 +239,7 @@ exports.handler = async (event) => {
                         <!-- Info Box -->
                         <div style="background: linear-gradient(135deg, rgba(0,206,209,0.1) 0%, rgba(194,216,185,0.1) 100%); border-radius: 12px; padding: 20px; margin-bottom: 32px; border: 1px solid rgba(0,206,209,0.2);">
                             <p style="margin: 0; color: #00CED1; font-size: 14px; line-height: 1.6;">
-                                <strong>📧 Confirmation email sent</strong><br>
-                                <span style="color: #666;">The meeting link will be sent to you 15 minutes before our scheduled time.</span>
+                                ${clientLinkHtml}
                             </p>
                         </div>
 
@@ -273,6 +316,7 @@ exports.handler = async (event) => {
                     <!-- Content -->
                     <div style="padding: 40px 30px;">
                         
+${operatorRoomNotice}
                         <!-- Client Info -->
                         <div style="background: linear-gradient(135deg, rgba(0,206,209,0.08) 0%, rgba(255,127,80,0.08) 100%); border-left: 4px solid #00CED1; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
                             <h2 style="margin: 0 0 20px 0; color: #00CED1; font-size: 20px; font-weight: 700;">Client Information</h2>
