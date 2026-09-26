@@ -2,6 +2,17 @@
 
 **Use when:** a secret has leaked, or on a scheduled rotation.
 **Time:** about 45 minutes.
+
+> **Status for the 2026-09 run (corrected 2026-09-26):** not an emergency.
+> `.env` was never in git history — see the erratum in ADR 0001. Still worth
+> doing, for two reasons: the old values did leave your machine in a shared
+> copy of the project, and Phase 2 (moving service ownership to `gackmar@`)
+> is wanted anyway per ADR 0002. **Skip Phase 3** — there is nothing to scrub.
+>
+> Also note: the variable names in Phase 4 are the *target* names. The
+> Netlify function still reads the old names (`SUPABASE_URL`,
+> `SUPABASE_ANON_KEY`, `YOUR_EMAIL`) until the booking-flow patch lands.
+> Set the new names alongside the old ones; don't delete the old ones yet.
 **Related:** [ADR 0001](../decisions/0001-secrets-out-of-version-control.md),
 [ADR 0002](../decisions/0002-email-identity-separation.md)
 
@@ -91,6 +102,9 @@ of your own deployment is a recoverable but tedious mistake.
 ---
 
 ## Phase 3 — Clean the repository
+
+> Only needed if `git log --all -- .env` shows the file in history. For this
+> repo it doesn't (checked 2026-09-26), so skip to Phase 4.
 
 ```bash
 # Stop tracking .env while keeping your local copy

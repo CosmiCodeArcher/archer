@@ -52,3 +52,4 @@ The distinction matters: decisions get superseded, runbooks get executed.
 | Runbook | When to use |
 |---------|-------------|
 | [credential-rotation.md](runbooks/credential-rotation.md) | A secret leaked, or on a scheduled rotation |
+| [applying-patches.md](runbooks/applying-patches.md) | Receiving a `.patch` file from a Claude chat review session |

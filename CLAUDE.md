@@ -89,13 +89,18 @@ encodes a constraint a future reader would otherwise find arbitrary.
 
 `docs/runbooks/` holds procedures that get executed rather than decided.
 
-## Known problems (as of 2026-08-30)
+## Known problems (as of 2026-09-26)
 
 Documented so they are not mistaken for intentional design.
 
 **Security — in progress**
-- `.env` was committed to a public repo. Credentials are being rotated. See
-  `docs/runbooks/credential-rotation.md`.
+- `.env` was never committed (verified against full history 2026-09-26; see
+  the erratum in ADR 0001). `.gitignore` now covers it. Rotation is scheduled
+  hygiene, not an emergency — `docs/runbooks/credential-rotation.md`.
+- Env var names are inconsistent. The function reads `SUPABASE_URL`,
+  `SUPABASE_ANON_KEY`, `YOUR_EMAIL`; `.env.example` documents the target names
+  (`SUPABASE_SERVICE_ROLE_KEY`, `OPERATOR_EMAIL`). The booking-flow patch
+  reconciles them. Until then, Netlify needs the old names.
 - The Netlify function still authenticates with the anon key. It must move to
   the service role key. **Migration `0001_meetings_rls.sql` breaks the
   function's INSERT until this happens — do both together.**
@@ -155,3 +160,8 @@ handles env vars; Node 18+ has native fetch).
   fixing them unprompted.
 - When a task touches an item in "Known problems", update this file to reflect
   the new state.
+- Patches arriving from a Claude chat review session are applied per
+  `docs/runbooks/applying-patches.md`: `git apply --check --3way` first, stage
+  with `git apply --3way`, show the staged diff, and wait for the owner's
+  approval before committing. If a patch fails, report which hunk failed and
+  stop. Never hand-edit a patch to force it through.

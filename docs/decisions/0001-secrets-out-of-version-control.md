@@ -1,7 +1,32 @@
 # 0001 — Secrets out of version control
 
-**Status:** Accepted
+**Status:** Accepted (context corrected 2026-09-26 — see Erratum)
 **Date:** 2026-08-30
+
+> ### Erratum — 2026-09-26
+>
+> The first paragraph of Context below is **wrong**, and the error is kept
+> visible rather than silently edited out.
+>
+> `.env` was **never committed**. A search of all 85 commits on `master`
+> (`git log --all -- .env` returns nothing, and no credential values appear
+> in any diff) shows the real credentials were always read from environment
+> variables. The original review saw `.env` because the file was present in a
+> copy of the project shared outside git, and wrongly concluded it was in the
+> repository.
+>
+> What *was* true: `.gitignore` did not list `.env`, so one `git add .` would
+> have published it. The repo was one habit away from a leak, not leaked.
+>
+> **What changes:** the Decision section still stands in full — every item in
+> it is correct practice regardless of whether a leak happened. What changes
+> is urgency. Rotation drops from "emergency" to "scheduled hygiene", because
+> the values left your machine only in that shared copy, not in a public repo.
+> See the updated runbook.
+>
+> **Lesson worth keeping:** verify against the source of truth before raising
+> an alarm. The source of truth for "is this in the repo" is `git log`, not a
+> file listing from somewhere else. This applies to reviewers, human or AI.
 
 ## Context
 
