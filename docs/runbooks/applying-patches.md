@@ -90,6 +90,25 @@ The commit message is already written in the patch header (everything from
 `Subject:` down to the `---` line). Claude Code commits using it, so the
 reasoning lands in `git log` permanently.
 
+The commit is authored by **you**, not by the patch's `From:` line, because
+`git apply` doesn't carry authorship across (`git am` would). That's
+intended: you reviewed it and you own it. Claude is credited through the
+`Co-Authored-By` trailer already in the message.
+
+## Applying a series
+
+Sometimes a change arrives as several numbered patches, for example
+`0004-….patch` and `0005-….patch`. Each one is built on top of the one
+before, so:
+
+1. Apply them **in number order**.
+2. **Commit each one before applying the next.** Patch 0005's context lines
+   expect 0004 to already be committed. Staging both and committing once
+   also merges two separately reasoned commits into one.
+3. Review each diff separately. Each patch has its own commit message
+   explaining its own scope.
+4. If one fails, stop there. The later patches depend on it.
+
 ## If it fails
 
 `git apply --check` failing means your files differ from what the patch

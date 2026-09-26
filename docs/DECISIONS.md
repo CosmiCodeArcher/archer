@@ -47,6 +47,13 @@ history:
 The Context, Decision, Reasoning and Consequences text is never rewritten.
 If the *decision* was wrong, that's a new record, not an erratum.
 
+## Roadmap
+
+The *plan* lives in [ROADMAP.md](ROADMAP.md): what happens in what order, and
+why. Decisions record why things are built the way they are. The roadmap
+records what's being built next. When a roadmap step makes an architectural
+choice, it produces an ADR here.
+
 ## Runbooks
 
 `runbooks/` holds step-by-step operational procedures — things you *do* rather
@@ -67,3 +74,4 @@ The distinction matters: decisions get superseded, runbooks get executed.
 |---------|-------------|
 | [credential-rotation.md](runbooks/credential-rotation.md) | A secret leaked, or on a scheduled rotation |
 | [applying-patches.md](runbooks/applying-patches.md) | Receiving a `.patch` file from a Claude chat review session |
+| [review-bundles.md](runbooks/review-bundles.md) | After applying a patch or finishing a local task: what to report back |

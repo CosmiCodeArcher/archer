@@ -97,73 +97,107 @@ encodes a constraint a future reader would otherwise find arbitrary.
 
 `docs/runbooks/` holds procedures that get executed rather than decided.
 
+## Roadmap
+
+`docs/ROADMAP.md` is the plan: phases (P1, P2 …), their steps (P1.1 …), the
+order, and the reasons for it. Before starting work, find the step it belongs
+to. If it doesn't fit any step, it goes in the roadmap's Ideas inbox rather
+than into the code. When a step is completed, update its status in the same
+commit.
+
 ## Known problems (as of 2026-09-26)
 
-Documented so they are not mistaken for intentional design.
+Documented so they're not mistaken for intentional design. Each item ends with
+the roadmap step that fixes it. When a step lands, delete its lines here.
 
-**Security — in progress**
-- `.env` was never committed (verified against full history 2026-09-26; see
-  the erratum in ADR 0001). `.gitignore` now covers it. Rotation is scheduled
-  hygiene, not an emergency — `docs/runbooks/credential-rotation.md`.
+**Security**
+- Legacy Supabase keys (`anon`, `service_role`) in use everywhere; Supabase
+  deprecates them by the end of 2026. See ADR 0003. → P1.3
+- `meetings` is readable by anyone holding the public key until
+  `supabase/migrations/0001_meetings_rls.sql` is applied. → P1.3
+- The Netlify function authenticates with the **anon** key. The RLS migration
+  breaks its INSERT until it holds the secret key: apply them together, in the
+  order given in ROADMAP P1.3. → P1.3
 - Env var names are inconsistent. The function reads `SUPABASE_URL`,
-  `SUPABASE_ANON_KEY`, `YOUR_EMAIL`; `.env.example` documents the target names
-  (`SUPABASE_SERVICE_ROLE_KEY`, `OPERATOR_EMAIL`). The booking-flow patch
-  reconciles them. Until then, Netlify needs the old names.
-- The Netlify function still authenticates with the anon key. It must move to
-  the service role key. **Migration `0001_meetings_rls.sql` breaks the
-  function's INSERT until this happens — do both together.**
+  `SUPABASE_ANON_KEY`, `YOUR_EMAIL`. Target names are in ADR 0003 and
+  `.env.example` — except that `.env.example` still lists
+  `SUPABASE_SERVICE_ROLE_KEY`, now superseded by `SUPABASE_SECRET_KEY`.
+  → P1.2, P1.3
+- The booking function has no input validation, output escaping or rate
+  limiting. `name` and `notes` land raw in an HTML email. → P1.2
+- `nodemailer` has open advisories, including SMTP command injection. The fix
+  is a major upgrade. → P1.2
+- `.env` was never committed (verified 2026-09-26; ADR 0001 erratum).
+  Rotation is scheduled hygiene. → P0.3
 
 **Correctness**
-- `netlify/functions/schedule-meeting.js` fabricates a fake Google Meet link
-  via `Math.random().toString(36)`. The URL does not resolve. Clients receive a
-  dead link.
-- Timezone handling is wrong. The frontend detects the user's IANA zone but
-  the function formats confirmation emails with a hardcoded
-  `America/New_York`. Fix: store `timestamptz`, send the detected zone, format
-  per recipient.
-- The booking function has no input validation or rate limiting. `name` and
-  `notes` interpolate directly into an HTML email template.
-- Double-booking has a race condition: two simultaneous submissions can both
-  pass the check-then-insert. Needs a unique constraint at the database level.
-
-**Structure — blocks the platform ambition**
-- `App.jsx` renders `Layout` as a leaf route, not a layout route with
-  `<Outlet />`. `/meeting`, `/contact`, `/success` have no nav or footer. No
-  `errorElement` (a thrown error white-screens the site) and no 404 route.
-- Content is hardcoded inside components: `projects` in `Portfolio.jsx`,
-  `skills` and `journey` in `About.jsx`. This is the main blocker for adding
-  articles or courses.
-- `Contact.jsx` and `ContactPage.jsx` are near-duplicate forks.
-- `src/` is flat. Should become feature folders.
-- No code splitting. Everything loads eagerly through `Hero.jsx`.
-- Dark mode is toggled imperatively via `classList.toggle` inside `Hero.jsx`
-  and shares a localStorage blob with navigation state. Belongs in a provider
-  at the root, applied before first paint.
+- The function fabricates a Google Meet link with `Math.random()`. Clients get
+  a dead link. → P1.1
+- Contact forms redirect to `/success` without checking the response, so a
+  failed submission looks like a sent one. → P1.1
+- Three different contact emails are hardcoded: `Contact.jsx`
+  (cosmiccodearcher@), `ContactPage.jsx` (ochiponumusa@), `Footer.jsx`
+  (awodiomale@). None read `src/config/site.js`. → P1.1
+- The React contact forms lack the `bot-field` honeypot input that
+  `public/form.html` declares. → P1.1
+- The time model is wrong in three ways: slots are defined in the *visitor's*
+  timezone; the server stores a date and time derived from its own UTC clock;
+  and `isTimeSlotBooked` compares against a date shifted by `toISOString()`,
+  which lands a day early for anyone east of UTC, including Lagos. Emails are
+  formatted in a hardcoded `America/New_York`. Worked example in ROADMAP
+  P1.4. → P1.4
+- Double-booking race: check-then-insert with no unique constraint. → P1.4
+- Supabase pauses free projects after about 7 days of low activity. Nothing
+  keeps it awake, and nothing alerts on failure. → P1.5
+- `BehindTheWork.jsx` references `/behind-the-work/01.jpg` and `02.jpg`, which
+  were deleted in `8fc2731`. Visitors see broken images. → P2.5
 
 **Honesty**
-- `README.md` is an AI-generated handoff document, not a README. It claims
-  lazy loading, memoization, ARIA labels, and keyboard navigation that do not
-  exist in the code. It needs rewriting.
-- `check.md` is a committed AI chat transcript containing superseded advice.
-  It should be deleted.
+- `README.md` is an AI-generated handoff document. It claims lazy loading,
+  memoization, ARIA labels and keyboard navigation that don't exist. → P2.1
+- `check.md` is a committed AI chat transcript of superseded advice. → P2.1
+
+**Quality**
+- `npm run lint`: 27 errors, all pre-existing. 8 `no-undef` (ESLint lints the
+  CommonJS function as browser code), 14 `react/no-unescaped-entities`, 4
+  `react/prop-types`, 1 `no-unused-vars`. Until P2.2, "no new errors" means
+  the count doesn't go up. → P1.2, P2.2
+- `npm audit`: 25 vulnerable packages (17 high), mostly build tooling.
+  Runtime-relevant: `react-router`, `nodemailer`. → P1.2, P2.3
+- Unused dependencies, confirmed unimported 2026-09-26: `@calcom/embed-react`,
+  `dotenv`, `node-fetch`, `date-fns` (P1.4 may adopt `date-fns`). → P2.3
 
 **Accessibility**
-- Bubbles in `BrandBubbles.jsx` are `<div>` with `onClick` — not keyboard
-  reachable.
+- Bubbles in `BrandBubbles.jsx` are `<div>`s with `onClick`: not keyboard
+  reachable. → P2.4
 - Nothing respects `prefers-reduced-motion` on a site that is almost entirely
-  motion.
+  motion. → P2.4
 - Modals rendered via `createPortal` have no focus trap or Escape handling.
-- Carousel arrows have no accessible labels.
+  → P2.4
+- Carousel arrows have no accessible labels. → P2.4
 
-## Unused dependencies
-
-Verify before removing, but these appear unused: `@calcom/embed-react` (a
-hand-rolled scheduler was built instead), `dotenv` and `node-fetch` (Vite
-handles env vars; Node 18+ has native fetch).
+**Structure: blocks the platform ambition**
+- `App.jsx` renders `Layout` as a leaf route, not a layout route with
+  `<Outlet />`. `/meeting`, `/contact` and `/success` have no nav or footer.
+  No `errorElement` (a thrown error white-screens the site) and no 404.
+  → P3.1
+- `src/` is flat; `Contact.jsx` and `ContactPage.jsx` are near-duplicate
+  forks. → P3.2
+- Content is hardcoded inside components: `projects` in `Portfolio.jsx`,
+  `skills` and `journey` in `About.jsx`. The main blocker for articles and
+  courses. → P3.3
+- No code splitting: one 627 kB JavaScript bundle (185 kB gzipped). → P3.4
+- Dark mode is toggled imperatively in `Hero.jsx` and shares a localStorage
+  blob with navigation state. Belongs in a provider at the root, applied
+  before first paint. → P3.5
+- Absolute `https://cc-archer.netlify.app/…` URLs are hardcoded in four
+  components and the function's email templates. → P4.1
 
 ## Working agreement
 
 - Run `npm run lint` and `npm run build` before declaring work complete.
+  Until ROADMAP P2.2 lands, lint has 27 pre-existing errors: report the count
+  before and after, and treat any increase as a failure.
 - Do not restructure beyond what was asked. Flag adjacent problems rather than
   fixing them unprompted.
 - When a task touches an item in "Known problems", update this file to reflect
@@ -173,3 +207,6 @@ handles env vars; Node 18+ has native fetch).
   with `git apply --3way`, show the staged diff, and wait for the owner's
   approval before committing. If a patch fails, report which hunk failed and
   stop. Never hand-edit a patch to force it through.
+- After applying a patch or finishing a local task, write a review bundle per
+  `docs/runbooks/review-bundles.md`, stored outside the repo. Never include
+  secret values.
