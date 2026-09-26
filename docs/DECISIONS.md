@@ -34,6 +34,19 @@ Records are **append-only**. When a decision changes, you don't edit the old
 file. You write a new record and mark the old one `Superseded by 00XX`. The
 history of your thinking is the valuable part.
 
+Two kinds of edit to an old record *are* allowed, because neither rewrites
+history:
+
+- **The Status line** changes when a later record supersedes or amends it.
+  That's what the line is for.
+- **A dated Erratum** may be added above Context when the record states a
+  *fact* that turns out to be false. The wrong text stays in place, and the
+  erratum explains what was wrong and whether the decision still stands. See
+  0001 for an example.
+
+The Context, Decision, Reasoning and Consequences text is never rewritten.
+If the *decision* was wrong, that's a new record, not an erratum.
+
 ## Runbooks
 
 `runbooks/` holds step-by-step operational procedures — things you *do* rather
@@ -46,6 +59,7 @@ The distinction matters: decisions get superseded, runbooks get executed.
 |---|-------|--------|
 | [0001](decisions/0001-secrets-out-of-version-control.md) | Secrets out of version control | Accepted |
 | [0002](decisions/0002-email-identity-separation.md) | Separate the four email identities | Accepted |
+| [0003](decisions/0003-supabase-publishable-and-secret-keys.md) | Adopt Supabase publishable and secret keys | Accepted — amends 0001 |
 
 ## Runbook index
 

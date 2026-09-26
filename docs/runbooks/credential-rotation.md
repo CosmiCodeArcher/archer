@@ -3,6 +3,9 @@
 **Use when:** a secret has leaked, or on a scheduled rotation.
 **Time:** about 45 minutes.
 
+**Related:** [ADR 0001](../decisions/0001-secrets-out-of-version-control.md),
+[ADR 0002](../decisions/0002-email-identity-separation.md)
+
 > **Status for the 2026-09 run (corrected 2026-09-26):** not an emergency.
 > `.env` was never in git history — see the erratum in ADR 0001. Still worth
 > doing, for two reasons: the old values did leave your machine in a shared
@@ -13,8 +16,22 @@
 > Netlify function still reads the old names (`SUPABASE_URL`,
 > `SUPABASE_ANON_KEY`, `YOUR_EMAIL`) until the booking-flow patch lands.
 > Set the new names alongside the old ones; don't delete the old ones yet.
-**Related:** [ADR 0001](../decisions/0001-secrets-out-of-version-control.md),
-[ADR 0002](../decisions/0002-email-identity-separation.md)
+>
+> **Supabase keys are handled differently now (2026-09-26):** don't rotate
+> the JWT secret. The Supabase credentials get rotated by migrating to the new
+> publishable and secret keys and then disabling the legacy ones — roadmap
+> step P1.3, per [ADR 0003](../decisions/0003-supabase-publishable-and-secret-keys.md).
+> For this run, only the Gmail app password and account ownership change:
+>
+> 1. Phase 2 — move ownership to `gackmar@` and create the new app password.
+> 2. Phase 4.2 — set `GMAIL_USER` and `GMAIL_APP_PASSWORD` in Netlify.
+>    Redeploy and confirm a booking email arrives.
+> 3. Phase 1.1 — *now* revoke the old app password. Then 1.3 and Phase 5.
+>
+> That's the reverse of the order below, on purpose. Revoke-first is for
+> emergencies, when a secret is actively exposed and every minute counts. On a
+> scheduled rotation, replace-then-revoke avoids a window where booking
+> emails fail.
 
 > **Nobody should send these values to anyone, including an AI assistant.**
 > Every step below is done by you, in a browser or a terminal. Any tool that
@@ -46,16 +63,24 @@ Better broken than impersonable.
 
 ### 1.2 Supabase keys
 
-1. Supabase dashboard → your project → Settings → API.
-2. Note that the **anon key** and **service role key** are both derived from the
-   project's JWT secret.
-3. Settings → API → **Rotate JWT secret**. This invalidates both keys at once.
+Per [ADR 0003](../decisions/0003-supabase-publishable-and-secret-keys.md), the
+project uses publishable (`sb_publishable_…`) and secret (`sb_secret_…`) keys.
+Those are revoked **individually**, so rotating one never breaks the others:
 
-> ⚠️ Rotating the JWT secret signs out every authenticated user and breaks
-> every deployed client until you update the environment variables. Since this
-> project has no user accounts yet, the impact is limited to the booking page
-> not loading slots for a few minutes. Do it now while that's still true —
-> this gets much more disruptive once the vault feature exists.
+1. Supabase dashboard → your project → API keys.
+2. Create a new secret key (name it for where it's used, e.g.
+   `netlify-functions`).
+3. Put it in Netlify as `SUPABASE_SECRET_KEY` and redeploy.
+4. Confirm a test booking still works.
+5. Delete the old secret key.
+
+The publishable key only needs rotating if you want a clean slate. It's public
+by design, so leaking it isn't an incident.
+
+> **Legacy keys (`anon`, `service_role`).** Until roadmap step P1.3 lands, the
+> site still runs on these. Don't rotate the JWT secret to invalidate them:
+> it breaks the live site and gains nothing, because P1.3 disables them
+> anyway. Disabling the legacy keys *is* their rotation.
 
 ### 1.3 Check for other exposure
 
@@ -156,16 +181,18 @@ Site → Site configuration → Environment variables. Set:
 | Variable | Scope | Notes |
 |----------|-------|-------|
 | `VITE_SUPABASE_URL` | Builds | Public. Inlined into the client bundle. |
-| `VITE_SUPABASE_ANON_KEY` | Builds | Public by design. Safety comes from RLS, not secrecy. |
-| `SUPABASE_SERVICE_ROLE_KEY` | Functions | **True secret.** Bypasses all RLS. Never prefix with `VITE_`. |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Builds | Public by design (`sb_publishable_…`). Safety comes from RLS, not secrecy. Replaces `VITE_SUPABASE_ANON_KEY` (ADR 0003). |
+| `SUPABASE_SECRET_KEY` | Functions | **True secret** (`sb_secret_…`). Bypasses all RLS. Never prefix with `VITE_`. Replaces `SUPABASE_SERVICE_ROLE_KEY` (ADR 0003). |
 | `GMAIL_USER` | Functions | `gackmar@gmail.com` |
 | `GMAIL_APP_PASSWORD` | Functions | **True secret.** From step 2.3. |
 | `OPERATOR_EMAIL` | Functions | Where booking notifications go. |
 
 The `VITE_` prefix is the dividing line and it's worth memorising: **`VITE_`
 means "will be published to the world in the JavaScript bundle."** Everything
-else stays server-side. Putting the service role key behind a `VITE_` prefix
-would hand every visitor full database access.
+else stays server-side. Putting the secret key behind a `VITE_` prefix
+would hand every visitor full database access. (Supabase now rejects secret
+keys sent from browsers, so the site would break loudly — but don't rely on
+that safety net.)
 
 ### 4.3 Redeploy and verify
 
@@ -186,7 +213,7 @@ Then check:
 ## Phase 5 — Close out
 
 - [ ] Old app password revoked
-- [ ] Supabase JWT secret rotated
+- [ ] Legacy Supabase keys disabled (roadmap P1.3 — ADR 0003)
 - [ ] Services owned by `gackmar@`, 2FA on, backup codes stored offline
 - [ ] `.env` untracked and ignored
 - [ ] Push protection enabled

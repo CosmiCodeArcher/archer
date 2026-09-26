@@ -49,12 +49,16 @@ These are not stylistic preferences. Violating them causes real harm.
    variable names with no values.
 2. **`VITE_` means public.** Vite inlines any `VITE_`-prefixed variable into
    the browser bundle. Never prefix a true secret with `VITE_`. The Supabase
-   service role key in particular must never appear in client code.
+   secret key (`sb_secret_…`, the successor to the service role key) in
+   particular must never appear in client code.
 3. **Security lives in the database, not in client code.** A column list in a
    `.select()` call is a request, not a restriction — a visitor can edit it in
    devtools. Row Level Security is the actual boundary. Any new table gets RLS
    enabled and policies written in the same change that creates it.
-4. **The service role key is server-side only.** Netlify Functions only.
+4. **The Supabase secret key is server-side only.** Netlify Functions only.
+   Browser code uses the publishable key (`sb_publishable_…`). Legacy
+   `anon` / `service_role` keys are being retired — see ADR 0003. New code
+   must not introduce them.
 5. **No personal data in public views.** `public.booked_slots` exposes only
    date and time on purpose. Do not add columns to it without checking.
 
@@ -81,7 +85,11 @@ These are not stylistic preferences. Violating them causes real harm.
 oddities are deliberate and documented.
 
 Records are **append-only**. To change a past decision, write a new record and
-mark the old one `Superseded by 00XX`. Never edit a historical record.
+mark the old one `Superseded by 00XX`. Only two edits to an old record are
+allowed: updating its Status line, and adding a dated Erratum above Context
+to correct a factual error (the wrong text stays in place). Never rewrite
+Context, Decision, Reasoning or Consequences. `docs/DECISIONS.md` has the full
+rule.
 
 Write a new ADR when a change: alters a boundary between parts of the system,
 picks between viable alternatives, introduces or removes a dependency, or

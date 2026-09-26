@@ -1,6 +1,7 @@
 # 0001 — Secrets out of version control
 
-**Status:** Accepted (context corrected 2026-09-26 — see Erratum)
+**Status:** Accepted (context corrected 2026-09-26 — see Erratum;
+key names amended by [0003](0003-supabase-publishable-and-secret-keys.md))
 **Date:** 2026-08-30
 
 > ### Erratum — 2026-09-26
