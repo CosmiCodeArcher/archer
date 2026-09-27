@@ -14,8 +14,9 @@
  *
  * SECURITY NOTE
  * ─────────────
- * This client authenticates with the ANON key, which is public and visible in
- * the browser bundle. It is not a secret and does not need to be one.
+ * This client authenticates with the PUBLISHABLE key (sb_publishable_…, the
+ * successor to the legacy anon key — ADR 0003), which is public and visible
+ * in the browser bundle. It is not a secret and does not need to be one.
  *
  * What protects the database is Row Level Security. Assume every query written
  * against this client could be modified by a visitor in devtools and re-run
@@ -29,7 +30,7 @@ import { createClient } from "@supabase/supabase-js";
 import { env } from "./env";
 
 export const supabase = env.isConfigured
-  ? createClient(env.supabaseUrl, env.supabaseAnonKey, {
+  ? createClient(env.supabaseUrl, env.supabasePublishableKey, {
       auth: {
         // No user accounts yet. Disabling session persistence avoids writing
         // auth state to localStorage for no reason.
@@ -50,7 +51,7 @@ export function requireSupabase() {
   if (!supabase) {
     throw new Error(
       "Supabase is not configured. Check VITE_SUPABASE_URL and " +
-        "VITE_SUPABASE_ANON_KEY. See docs/runbooks/credential-rotation.md"
+        "VITE_SUPABASE_PUBLISHABLE_KEY. See docs/runbooks/credential-rotation.md"
     );
   }
   return supabase;

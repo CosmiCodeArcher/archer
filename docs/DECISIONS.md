@@ -74,4 +74,5 @@ The distinction matters: decisions get superseded, runbooks get executed.
 |---------|-------------|
 | [credential-rotation.md](runbooks/credential-rotation.md) | A secret leaked, or on a scheduled rotation |
 | [applying-patches.md](runbooks/applying-patches.md) | Receiving a `.patch` file from a Claude chat review session |
+| [supabase-key-cutover.md](runbooks/supabase-key-cutover.md) | Moving to publishable/secret keys and locking the `meetings` table (hotfix 0008) |
 | [review-bundles.md](runbooks/review-bundles.md) | After applying a patch or finishing a local task: what to report back |

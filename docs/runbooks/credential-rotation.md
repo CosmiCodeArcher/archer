@@ -21,6 +21,8 @@
 > the JWT secret. The Supabase credentials get rotated by migrating to the new
 > publishable and secret keys and then disabling the legacy ones — roadmap
 > step P1.3, per [ADR 0003](../decisions/0003-supabase-publishable-and-secret-keys.md).
+> (Update 2026-09-27: the legacy keys were found already disabled; the
+> cutover is hotfix 0008, `supabase-key-cutover.md`.)
 > For this run, only the Gmail app password and account ownership change:
 >
 > 1. Phase 2 — move ownership to `gackmar@` and create the new app password.
@@ -69,7 +71,7 @@ Those are revoked **individually**, so rotating one never breaks the others:
 
 1. Supabase dashboard → your project → API keys.
 2. Create a new secret key (name it for where it's used, e.g.
-   `netlify-functions`).
+   `netlify_functions`; Supabase key names can't contain hyphens).
 3. Put it in Netlify as `SUPABASE_SECRET_KEY` and redeploy.
 4. Confirm a test booking still works.
 5. Delete the old secret key.

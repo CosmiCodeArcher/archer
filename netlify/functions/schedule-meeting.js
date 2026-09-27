@@ -12,10 +12,30 @@ import { createClient } from '@supabase/supabase-js';
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const YOUR_EMAIL = process.env.YOUR_EMAIL;
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Supabase, with the SECRET key (ADR 0003, hotfix 0008).
+// The function used the legacy anon key, and the project's legacy keys are
+// now disabled, so every booking failed with "Legacy API keys are disabled".
+// The secret key (sb_secret_…) acts as Postgres's service_role, which
+// bypasses Row Level Security: the function can insert into `meetings`
+// after migration 0001 locks the table against the public.
+//
+// Created lazily, inside the handler, not at module load. createClient()
+// throws when the URL or key is missing; at module level that crashed the
+// whole function (a 502 with a stack trace) instead of returning a clear
+// error. Now a missing variable gives a 503 and a log line naming it.
+const getSupabase = () => {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SECRET_KEY;
+    const missing = [!url && 'SUPABASE_URL', !key && 'SUPABASE_SECRET_KEY'].filter(Boolean);
+    if (missing.length > 0) {
+        console.error(`[config] Missing Netlify environment variables: ${missing.join(', ')}`);
+        return null;
+    }
+    return createClient(url, key, {
+        auth: { persistSession: false, autoRefreshToken: false },
+    });
+};
 
 // Meeting room (ROADMAP P1.1)
 // A fixed, real room — a Zoom personal room or a Meet link made from the Meet
@@ -57,6 +77,14 @@ export const handler = async (event) => {
     } catch (error) {
         console.error('Invalid JSON:', error);
         return { statusCode: 400, body: 'Invalid JSON' };
+    }
+
+    const supabase = getSupabase();
+    if (!supabase) {
+        return {
+            statusCode: 503,
+            body: JSON.stringify({ error: 'Booking is temporarily unavailable. Please email me instead.' }),
+        };
     }
 
     const { name, email, dateTime, duration, type, notes } = body;

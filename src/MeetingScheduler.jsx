@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tilt } from "react-tilt";
-import { createClient } from '@supabase/supabase-js';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase } from "./lib/supabase";
 
 function MeetingScheduler() {
   const [step, setStep] = useState(1);
@@ -25,8 +20,12 @@ function MeetingScheduler() {
     setUserTimezone(timezone);
 
     const fetchBookedSlots = async () => {
+      if (!supabase) return; // not configured: already logged by lib/env.js
+      // The booked_slots view exposes only date and time. The browser used to
+      // read the `meetings` table itself, which returned every booker's name,
+      // email and notes to anyone who asked (migration 0001, hotfix 0008).
       const { data, error } = await supabase
-        .from('meetings')
+        .from('booked_slots')
         .select('date, time');
       if (error) {
         console.error('Error fetching booked slots:', error);

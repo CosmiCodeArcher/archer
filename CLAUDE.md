@@ -54,7 +54,11 @@ These are not stylistic preferences. Violating them causes real harm.
 3. **Security lives in the database, not in client code.** A column list in a
    `.select()` call is a request, not a restriction — a visitor can edit it in
    devtools. Row Level Security is the actual boundary. Any new table gets RLS
-   enabled and policies written in the same change that creates it.
+   enabled and policies written in the same change that creates it. Any new
+   **view** starts with `revoke all … from anon, authenticated` before its
+   grants: Supabase grants those roles ALL on new views by default, simple
+   views are writable, and a view running with its owner's rights skips RLS
+   (review 05).
 4. **The Supabase secret key is server-side only.** Netlify Functions only.
    Browser code uses the publishable key (`sb_publishable_…`). Legacy
    `anon` / `service_role` keys are being retired — see ADR 0003. New code
@@ -111,18 +115,9 @@ Documented so they're not mistaken for intentional design. Each item ends with
 the roadmap step that fixes it. When a step lands, delete its lines here.
 
 **Security**
-- Legacy Supabase keys (`anon`, `service_role`) in use everywhere; Supabase
-  deprecates them by the end of 2026. See ADR 0003. → P1.3
-- `meetings` is readable by anyone holding the public key until
-  `supabase/migrations/0001_meetings_rls.sql` is applied. → P1.3
-- The Netlify function authenticates with the **anon** key. The RLS migration
-  breaks its INSERT until it holds the secret key: apply them together, in the
-  order given in ROADMAP P1.3. → P1.3
-- Env var names are inconsistent. The function reads `SUPABASE_URL`,
-  `SUPABASE_ANON_KEY`, `YOUR_EMAIL`. Target names are in ADR 0003 and
-  `.env.example` — except that `.env.example` still lists
-  `SUPABASE_SERVICE_ROLE_KEY`, now superseded by `SUPABASE_SECRET_KEY`.
-  → P1.2, P1.3
+- The operator email is read as `YOUR_EMAIL`; `.env.example` documents the
+  target name `OPERATOR_EMAIL`. (The Supabase names were reconciled in hotfix
+  0008.) → P1.2
 - The booking function has no input validation, output escaping or rate
   limiting. `name` and `notes` land raw in an HTML email. → P1.2
 - `nodemailer` has open advisories, including SMTP command injection. The fix
@@ -147,6 +142,12 @@ the roadmap step that fixes it. When a step lands, delete its lines here.
   `''` rather than `null` in `meet_link` for that reason). P1.4's migration
   needs the real schema first: export it into
   `supabase/migrations/0000_meetings_baseline.sql`. → P1.4
+- The booking page shows raw server errors in a browser `alert()`
+  ("Error 500: {…}"). → P1.2
+- After a successful booking, `MeetingScheduler.jsx` adds
+  `{ date: data.date, time: data.time }` to the booked list, but the function
+  returns `{ success, data }`, so both are `undefined` and nothing greys out
+  until reload. → P1.4
 - Double-booking race: check-then-insert with no unique constraint. → P1.4
 - Local checks can't see deploy failures. `npm run build` never bundles
   `netlify/functions/`, and Netlify can start enforcing new checks with no

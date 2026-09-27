@@ -27,8 +27,9 @@
 --    can do nothing with the table directly.
 -- 2. Expose a narrow view containing only the two non-sensitive columns the
 --    calendar UI actually needs, and grant read on that.
--- 3. Writes go exclusively through the Netlify function using the service role
---    key, which bypasses RLS by design.
+-- 3. Writes go exclusively through the Netlify function using the Supabase
+--    secret key (ADR 0003), which acts as service_role and bypasses RLS by
+--    design.
 --
 -- This is the principle of least privilege: each actor gets exactly the access
 -- its job requires and nothing more.
@@ -51,9 +52,18 @@
 -- ───────────────────────────────────────────────────────────────────────────
 alter table public.meetings enable row level security;
 
--- FORCE applies RLS even to the table's owner. Without this, a query running
--- as the owning role silently skips every policy. Belt and braces.
-alter table public.meetings force row level security;
+-- Deliberately NOT forced. An earlier draft of this migration (never applied)
+-- also ran `force row level security`, which makes RLS apply to the table's
+-- OWNER too. But the booked_slots view below reads this table with its
+-- owner's privileges (that's how it lets anon see dates and times without
+-- touching the table). Forced RLS with no policies would have made the view
+-- return zero rows: every slot would look free. Caught in review before
+-- anyone ran it (hotfix 0008).
+--
+-- The owner is `postgres`, which only you use, from the dashboard. Forcing
+-- RLS on it would protect against nobody. The statement below is a no-op on a
+-- table that was never forced, and undoes it on one that was.
+alter table public.meetings no force row level security;
 
 
 -- ───────────────────────────────────────────────────────────────────────────
@@ -98,6 +108,16 @@ comment on view public.booked_slots is
   'The base table is RLS-locked and unreadable by anon. Do NOT add columns '
   'here without confirming they contain no personal data.';
 
+-- Take away everything first, THEN grant SELECT.
+--
+-- Supabase gives anon and authenticated ALL privileges on every new table
+-- AND view in `public` by default. A plain view over one table is also
+-- automatically updatable in Postgres: an UPDATE, DELETE or INSERT on the
+-- view is carried out on `meetings`. And because this view runs with its
+-- owner's rights, RLS on `meetings` doesn't stop it. Without this revoke,
+-- anyone holding the public key could move, delete or invent bookings
+-- through the view. Found in review 05, before this migration was ever run.
+revoke all on public.booked_slots from anon, authenticated;
 grant select on public.booked_slots to anon;
 grant select on public.booked_slots to authenticated;
 
@@ -115,7 +135,7 @@ grant select on public.booked_slots to authenticated;
 --     from pg_class
 --     where relname = 'meetings';
 --
---     Expect: relrowsecurity = true, relforcerowsecurity = true
+--     Expect: relrowsecurity = true, relforcerowsecurity = false
 
 -- 4b. Confirm no policies grant anon access:
 --
@@ -125,19 +145,41 @@ grant select on public.booked_slots to authenticated;
 --
 --     Expect: zero rows.
 
--- 4c. The real test — from the DEPLOYED SITE's browser console:
+-- 4c. The real test: ask the API exactly what an anonymous visitor can get.
+--     Open any browser tab, press F12, go to Console, and paste the lines
+--     below, filling in your project URL and your PUBLISHABLE key. The
+--     publishable key is public by design, so pasting it into your own
+--     browser is fine. Never do this with the secret key.
 --
---     const { data, error } = await supabase.from('meetings').select('*')
---     console.log(data, error)
+--     const base = 'https://<your-project>.supabase.co/rest/v1/';
+--     const h = { apikey: '<your sb_publishable_ key>' };
+--     await (await fetch(base + 'meetings?select=*', { headers: h })).json();
 --
---     Expect: data is empty, or an error. If you see names and email
---     addresses, this migration did not apply. Stop and fix it.
+--     Expect: an error object mentioning "permission denied for table
+--     meetings". If you see names or email addresses, the migration did not
+--     apply. Stop and fix it.
 --
---     Then confirm the view still works:
+--     await (await fetch(base + 'booked_slots?select=*', { headers: h })).json();
 --
---     await supabase.from('booked_slots').select('*')
+--     Expect: an array of { date, time } objects, and nothing else. An empty
+--     array [] is correct if there are no bookings yet.
 --
---     Expect: rows containing only date and time.
+-- 4d. Confirm the public can only READ the view (the check that would have
+--     caught the write hole, review 05):
+--
+--     select grantee, string_agg(privilege_type, ', ') as privileges
+--     from information_schema.role_table_grants
+--     where table_name = 'booked_slots' and grantee in ('anon', 'authenticated')
+--     group by grantee;
+--
+--     Expect exactly two rows: anon | SELECT, and authenticated | SELECT.
+--     Anything more (UPDATE, DELETE, INSERT …) means visitors can change
+--     bookings. Stop and fix it.
+--
+-- 4e. Supabase's Security Advisor will list booked_slots as a "security
+--     definer view". That's expected: it's the whole design, since the view
+--     reads the locked table on anon's behalf. It's safe because the view
+--     exposes only date and time (CLAUDE.md hard rule 5).
 
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -148,9 +190,9 @@ grant select on public.booked_slots to authenticated;
 --
 -- Still outstanding:
 --
---   • Netlify function must switch from SUPABASE_ANON_KEY to
---     SUPABASE_SERVICE_ROLE_KEY. Until it does, its INSERT will now FAIL,
---     because the revoke above applies to it too. Do these together.
+--   • Done in hotfix 0008: the Netlify function uses SUPABASE_SECRET_KEY
+--     (the service_role successor, ADR 0003), which bypasses RLS, and the
+--     browser reads booked_slots instead of meetings.
 --
 --   • Migration 0002 will replace the separate `date` + `time` columns with
 --     a single `timestamptz`, to fix the timezone bug where confirmation

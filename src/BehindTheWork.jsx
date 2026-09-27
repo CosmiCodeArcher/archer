@@ -293,7 +293,7 @@ export default function BehindTheWork() {
  * SWAPPING IN SUPABASE STORAGE LATER
  * ─────────────────────────────────────────────────────────────────
  * Your project already has @supabase/supabase-js configured
- * (see MeetingScheduler.jsx) via VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY.
+ * as the shared client in src/lib/supabase.js (publishable key, ADR 0003).
  *
  * When you're ready to move off the local placeholder:
  *

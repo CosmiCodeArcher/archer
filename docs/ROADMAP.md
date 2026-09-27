@@ -1,9 +1,10 @@
 # Roadmap
 
-**Living document.** Last updated 2026-09-26 (hotfix 0007).
-**Where we are:** phase P1 is in progress. Hotfix 0007 restores deploys and
-the booking function, which had been down since at least 30 Aug. P1.1 is
-then complete apart from its done-when checks. Next: P1.0, then P1.2.
+**Living document.** Last updated 2026-09-27 (hotfix 0008).
+**Where we are:** phase P1 is in progress. Hotfix 0007 restored deploys; the
+first test booking then showed the code still used the legacy Supabase keys,
+which you had disabled earlier. Hotfix 0008 pulls P1.3 forward to fix it. After that: P1.1's done-when
+checks, P1.0, then P1.2.
 
 This is the plan for turning the portfolio into a platform, without breaking
 what's live along the way. It says *what* happens in *what order*, and *why
@@ -216,7 +217,8 @@ What the site promises, and what actually happens (verified 2026-09-26):
 | "Email me at …" | Three different addresses in three components | `Contact.jsx`, `ContactPage.jsx`, `Footer.jsx` | P1.1 |
 | "Your meeting is at 10:00" | The email shows New York time | `schedule-meeting.js` | P1.4 |
 | "This slot is free" | Booked slots never grey out for visitors east of UTC, including your own zone (WAT) | `MeetingScheduler.jsx` | P1.4 |
-| *(implied)* "Your details are private" | Anyone holding the public key can read every booking | no RLS on `meetings` | P1.3 |
+| *(implied)* "Your details are private" | Anyone holding the public key can read every booking | no RLS on `meetings` | P1.3 (hotfix 0008) |
+| *(implied)* "Booking works" | "Legacy API keys are disabled": every booking fails, 27 Sep | function and browser on legacy keys | P1.3 (hotfix 0008) |
 | *(implied)* "Booking works" | The function crashed on load (HTTP 502) since at least 30 Aug, so every booking failed; and since Netlify began enforcing the module check, no deploy had succeeded | `schedule-meeting.js` | Hotfix 0007 |
 | *(implied)* "Booking keeps working" | Supabase pauses free projects after a quiet week | platform policy | P1.5 |
 
@@ -333,6 +335,18 @@ secrets, and content.
 versioning and why major upgrades get reviewed; CommonJS vs ES modules.
 
 ### P1.3 New keys and a locked table · 👤 + 📦 · M · deadline
+
+**Status:** pulled forward as **hotfix 0008** (2026-09-27): the code still
+used the legacy keys, which the owner had disabled earlier, so booking was
+down. Procedure:
+`docs/runbooks/supabase-key-cutover.md`. The order below is the original
+plan; the runbook adapts it to a site that was already broken, which
+removes the need for a preview deploy. Two changes from the plan: the
+function reads no fallback names (a disabled key is useless as a fallback),
+the migration no longer forces RLS (tested: forcing it made the view return
+zero rows), and it revokes Supabase's default write grants on the view
+before granting read (review 05 found visitors could otherwise move, delete
+or invent bookings through it).
 
 **What:** move to Supabase's publishable and secret keys (ADR 0003), and apply
 the RLS migration (`supabase/migrations/0001_meetings_rls.sql`). They go
@@ -857,6 +871,7 @@ changed.
 
 | Date | Change | Why |
 |---|---|---|
+| 2026-09-27 | Hotfix 0008: P1.3 pulled forward | The first real test booking returned "Legacy API keys are disabled" (the owner had disabled them earlier). Browser and function moved to publishable/secret keys. Migration 0001 fixed twice before it ever ran: FORCE dropped (it would have emptied the view), and a revoke added (review 05: Supabase's default grants made the view writable by the public). Both proven on real Postgres with Supabase-style roles and default privileges |
 | 2026-09-26 | Hotfix 0007: function converted to ES modules | Every deploy had failed since Netlify began enforcing its CommonJS-under-`"type": "module"` check, and the live function crashed with a 502. Found by review bundle 03. Added P0.4, P0.5, and a Netlify bundle check to P2.2's CI |
 | 2026-09-26 | P1 in progress; P1.1 code landed (patch 0006) | Also: pulled P2.2's ESLint Node block forward (lint 27 → 19); city name replaced with the WAT timezone label in docs, since `Africa/Lagos` names a zone, not an address |
 | 2026-09-26 | Roadmap created (patch 0005) | Gives every patch a place in a plan. P1 ordered around the Supabase key deadline (ADR 0003) and the deeper timezone bug found while surveying the code. |

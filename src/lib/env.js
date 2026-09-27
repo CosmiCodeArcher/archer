@@ -3,12 +3,12 @@
  *
  * Why this exists
  * ───────────────
- * MeetingScheduler.jsx previously did:
+ * MeetingScheduler.jsx used to build its own client straight from
+ * `import.meta.env`, with no check that the values existed:
  *
- *     const supabase = createClient(
- *       import.meta.env.VITE_SUPABASE_URL,
- *       import.meta.env.VITE_SUPABASE_ANON_KEY
- *     );
+ *     createClient(import.meta.env.VITE_SUPABASE_URL, <key from import.meta.env>)
+ *
+ * (Don't copy that. Use the shared client in src/lib/supabase.js.)
  *
  * If either variable is missing in a deploy, that call does not throw. It
  * returns a client object that looks fine and fails later, inside a network
@@ -35,7 +35,9 @@
  */
 const raw = {
   VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  // Publishable key (sb_publishable_…), not the legacy anon key: the
+  // project's legacy keys are disabled (ADR 0003, hotfix 0008).
+  VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
 };
 
 const missing = Object.entries(raw)
@@ -63,7 +65,7 @@ if (missing.length > 0) {
 
 export const env = Object.freeze({
   supabaseUrl: raw.VITE_SUPABASE_URL,
-  supabaseAnonKey: raw.VITE_SUPABASE_ANON_KEY,
+  supabasePublishableKey: raw.VITE_SUPABASE_PUBLISHABLE_KEY,
   /** True when every required variable is present. Guard features with this. */
   isConfigured: missing.length === 0,
 });

@@ -1,7 +1,10 @@
 # 0003 — Adopt Supabase publishable and secret keys
 
 **Status:** Accepted — amends [0001](0001-secrets-out-of-version-control.md)
-(key names only; its principles stand)
+(key names only; its principles stand). **Cut over in hotfix 0008
+(2026-09-27)**, ahead of plan: the owner had already disabled the legacy keys,
+and the code still used them, so booking was down. Verification: see
+`docs/runbooks/supabase-key-cutover.md`.
 **Date:** 2026-09-26
 **Deadline:** cut over before **1 December 2026** (see Context)
 
